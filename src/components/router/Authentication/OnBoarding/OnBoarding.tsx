@@ -4,10 +4,13 @@ import AppIntroSlider from "react-native-app-intro-slider";
 import { Image } from "@rneui/base";
 import { useAuthorizationStore, useLoggingStore } from "../../../../hooks/store";
 import { useTheme } from "@rneui/themed";
+import { useTranslation } from "react-i18next";
+import "../../../../locales/index"
 import LottieView from "lottie-react-native";
 
 export default function OnBoarding({ navigation }) {
-    const authorizationStore = useAuthorizationStore();
+  const { t } = useTranslation();
+  const authorizationStore = useAuthorizationStore();
     const loggingStore = useLoggingStore();
     const { theme } = useTheme();
     const [showLottie, setShowLottie] = useState(false);
@@ -18,20 +21,20 @@ export default function OnBoarding({ navigation }) {
     const slides = [
         {
             key: 1,
-            title: "Bienvenido a FullCourtFiesta\n 🏀🎊",
-            text: "Tu aplicación para encontrar y jugar con otros fans de baloncesto a tu alreadedor",
+            title: t("welcome_to_fullcourtfiesta"),
+            text: t("your_app_to_find_and_play_with_other_fans"),
             image: require("../../../../../assets/slider-1.png"),
         },
         {
             key: 2,
-            title: "Domina la pista con tus amigos",
-            text: "Chatea, invita y únete a otros jugadores en partidas, eventos o equipos. O crea tu propia comunidad acogiéndolos",
+            title: t("dominate_with_your_friends"),
+            text: t("chat_invite_join"),
             image: require("../../../../../assets/slider-2.png"),
         },
         {
             key: 3,
-            title: "De rookie al salón de la fama",
-            text: "Sigue tus estadísticas, recibe comentarios y aprende de los expertos. Desafíate a ti mismo y a los demás con objetivos e insignias.",
+            title: t("from_rookie_to_hall_of_fame"),
+            text: t("track_your_stats_get_feedback"),
             image: require("../../../../../assets/slider-3.png"),
         },
     ];
@@ -89,8 +92,8 @@ export default function OnBoarding({ navigation }) {
             bottomButton
             style={{ backgroundColor: "#fff" }}
             activeDotStyle={{ backgroundColor: theme.colors.primary }}
-            nextLabel='Siguiente'
-            doneLabel='Empezar mi carrera'
+            nextLabel={t("next")}
+            doneLabel={t("start_my_carreer")}
         />
     );
 }

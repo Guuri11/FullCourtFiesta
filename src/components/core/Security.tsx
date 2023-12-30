@@ -26,14 +26,14 @@ const Security = () => {
     const handleSession = useCallback(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
             loggingStore.register(
-                "Security.tsx: Supabase getSession() => " + JSON.stringify(session?.user),
+                "Security.tsx: Supabase getSession() => " + JSON.stringify(session?.user.email),
             );
             authenticationStore.setSession(session);
         });
 
         supabase.auth.onAuthStateChange((_event, session) => {
             loggingStore.register(
-                "Security.tsx: Supabase onAuthStateChange() => " + JSON.stringify(session?.user),
+                "Security.tsx: Supabase onAuthStateChange() => " + JSON.stringify(session?.user.email),
             );
             authenticationStore.setSession(session);
         });
