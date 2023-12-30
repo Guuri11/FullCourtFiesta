@@ -3,21 +3,16 @@ import React, { useCallback, useEffect, useState } from "react";
 import * as Location from "expo-location";
 import MapView from "react-native-maps";
 import RequestLocation from "../../design/common/RequestLocation";
-import { useLocationStore, useLoggingStore } from "../../../hooks/store";
+import { useLocationStore } from "../../../hooks/store";
 import { observer } from "mobx-react-lite";
+import { log } from "../../../utils/logger";
 
 const Home = observer(() => {
     const [showRequestLocationModal, setShowRequestLocationModal] = useState(false);
     const locationStore = useLocationStore();
-    const loggingStore = useLoggingStore();
-
-    loggingStore.register("Home.tsx: loading");
 
     const handleLocationChange = useCallback(
         (location: Location.LocationObject) => {
-            loggingStore.register(
-                "Home.tsx: handleLocationChange => " + JSON.stringify(location.coords),
-            );
             locationStore.setLocation(location);
         },
         [locationStore],
@@ -25,10 +20,8 @@ const Home = observer(() => {
 
     useEffect(() => {
         Location.getForegroundPermissionsAsync().then((permissionResponse) => {
-            loggingStore.register(
-                "Home.tsx: checking current location permissions => " + permissionResponse.status,
-            );
             if (permissionResponse.status !== "granted") {
+                log.warn("Foreground permission is not granted 👀!!")
                 setShowRequestLocationModal(true);
             }
             locationStore.setStatus(permissionResponse.status);
@@ -39,7 +32,7 @@ const Home = observer(() => {
         let subscription;
 
         if (locationStore.status === "granted") {
-            loggingStore.register("Home.tsx: calling Location.watchPositionAsync");
+            log.info("Getting user location 🌍")
             Location.watchPositionAsync({ distanceInterval: 10 }, handleLocationChange).then(
                 (sub) => {
                     subscription = sub;

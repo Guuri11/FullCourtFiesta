@@ -2,21 +2,21 @@ import React, { useState, useRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import AppIntroSlider from "react-native-app-intro-slider";
 import { Image } from "@rneui/base";
-import { useAuthorizationStore, useLoggingStore } from "../../../../hooks/store";
+import { useAuthorizationStore } from "../../../../hooks/store";
 import { useTheme } from "@rneui/themed";
 import { useTranslation } from "react-i18next";
 import "../../../../locales/index"
 import LottieView from "lottie-react-native";
+import { log } from "../../../../utils/logger";
 
 export default function OnBoarding({ navigation }) {
-  const { t } = useTranslation();
-  const authorizationStore = useAuthorizationStore();
-    const loggingStore = useLoggingStore();
+    const { t } = useTranslation();
+    const authorizationStore = useAuthorizationStore();
     const { theme } = useTheme();
     const [showLottie, setShowLottie] = useState(false);
     const lottieAnimation = useRef(null);
 
-    loggingStore.register("Onboarding.tsx: loading");
+    log.info("The user is seeing the onboarding for first time");
 
     const slides = [
         {
@@ -51,9 +51,15 @@ export default function OnBoarding({ navigation }) {
         );
     };
 
-    const handleFinish = () => {
+    const handleShowLottie = () => {
         setShowLottie(true);
     };
+
+    const finishOnBoarding = () => {
+        navigation.navigate("Authentication");
+        authorizationStore.setShowOnboarding("0");
+        log.info("The user has finished the Onboarding");
+    }
 
     if (showLottie) {
         return (
@@ -72,10 +78,7 @@ export default function OnBoarding({ navigation }) {
                         height: 350,
                     }}
                     loop={false}
-                    onAnimationFinish={() => {
-                        navigation.navigate("Authentication");
-                        authorizationStore.setShowOnboarding("0");
-                    }}
+                    onAnimationFinish={finishOnBoarding}
                     source={require("../../../../../assets/lottie/basketballHoop.json")}
                 />
             </View>
@@ -87,8 +90,8 @@ export default function OnBoarding({ navigation }) {
             keyExtractor={(item) => item.key.toString()}
             renderItem={_renderItem}
             data={slides}
-            onDone={handleFinish}
-            onSkip={handleFinish}
+            onDone={handleShowLottie}
+            onSkip={handleShowLottie}
             bottomButton
             style={{ backgroundColor: "#fff" }}
             activeDotStyle={{ backgroundColor: theme.colors.primary }}

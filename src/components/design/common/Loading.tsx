@@ -1,13 +1,10 @@
 import { Image } from "@rneui/themed";
 import React from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
-import { useLoggingStore } from "../../../hooks/store";
+import { log } from "../../../utils/logger";
 
 const LoadingPage = () => {
-    const loggingStore = useLoggingStore();
-
-    loggingStore.register("LoadingPage.tsx: Showing loading page");
-
+    log.info("LoadingPage.tsx: Loading...");
     return (
         <View style={styles.container}>
             <Image

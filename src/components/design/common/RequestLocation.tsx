@@ -2,26 +2,32 @@ import { Text } from "react-native";
 import React, { useState } from "react";
 import { Dialog } from "@rneui/themed";
 import * as Location from "expo-location";
-import { useLocationStore, useLoggingStore } from "../../../hooks/store";
+import { useLocationStore } from "../../../hooks/store";
+import "../../../locales/index";
+import { useTranslation } from "react-i18next";
+import { log } from "../../../utils/logger";
 
 type RequestLocationProps = {
     isVisible: boolean;
 };
 
 const RequestLocation = (props: RequestLocationProps) => {
+    const { t } = useTranslation();
     const locationStore = useLocationStore();
-    const loggingStore = useLoggingStore();
     const [hideDialog, setHideDialog] = useState(false);
 
-    loggingStore.register("RequestLocation.tsx: loading");
-
     const handleLocationPermission = () => {
-        loggingStore.register("RequestLocation.tsx: handleLocationPermission");
+        log.info("User allowed location permission 📍")
         Location.requestForegroundPermissionsAsync().then((response) => {
             locationStore.setStatus(response.status);
         });
         setHideDialog(true);
     };
+
+    const handleDeny = () => {
+        log.warn("User denied access to location 😱")
+        setHideDialog(true);
+    }
 
     return (
         <Dialog
@@ -30,18 +36,15 @@ const RequestLocation = (props: RequestLocationProps) => {
                 setHideDialog(true);
             }}
         >
-            <Dialog.Title title='Permite acceso a la ubicación exacta' />
+            <Dialog.Title title={t("allow_location_access")} />
             <Text>
-                Para registrar actividades en FullCourtFiesta, será necesario que permitas el acceso
-                a la ubicación exacta
+                {t("to_register_activities_in_fullcourtfiesta")}
             </Text>
             <Dialog.Actions>
-                <Dialog.Button title='Permitir' onPress={handleLocationPermission} />
+                <Dialog.Button title={t("allow")} onPress={handleLocationPermission} />
                 <Dialog.Button
-                    title='Denegar'
-                    onPress={() => {
-                        setHideDialog(true);
-                    }}
+                    title={t("deny")}
+                    onPress={handleDeny}
                 />
             </Dialog.Actions>
         </Dialog>

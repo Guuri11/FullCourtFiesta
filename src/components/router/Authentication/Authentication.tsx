@@ -2,17 +2,14 @@ import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { supabase } from "../../../utils/supabase";
 import { Button, Input } from "@rneui/themed";
-import { useAuthenticationStore, useLoggingStore, useUIStore } from "../../../hooks/store";
+import { useAuthenticationStore, useUIStore } from "../../../hooks/store";
 
 export default function Authentication() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const loggingStore = useLoggingStore();
     const uiStore = useUIStore();
     const authenticationStore = useAuthenticationStore();
-
-    loggingStore.register("Authentication.tsx: Loading...");
 
     async function signInWithEmail() {
         setLoading(true);

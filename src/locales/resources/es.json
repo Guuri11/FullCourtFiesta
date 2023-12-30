@@ -6,5 +6,9 @@
     "from_rookie_to_hall_of_fame": "De rookie al salón de la fama",
     "track_your_stats_get_feedback": "Sigue tus estadísticas, recibe comentarios y aprende de los expertos. Desafíate a ti mismo y a los demás con objetivos e insignias.",
     "next": "Continuar",
-    "start_my_carreer": "Empezar mi carrera"
+    "start_my_carreer": "Empezar mi carrera",
+    "allow_location_access": "Permite acceso a la ubicación exacta",
+    "to_register_activities_in_fullcourtfiesta": "Para registrar actividades en FullCourtFiesta, será necesario que permitas el acceso a la ubicación exacta",
+    "deny": "Denegar",
+    "allow": "Permitir"
 }

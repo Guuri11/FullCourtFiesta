@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeStack from "./Home/Stack";
 import { Icon } from "@rneui/themed";
 import { observer } from "mobx-react-lite";
-import { useAuthenticationStore, useAuthorizationStore, useLoggingStore } from "../../hooks/store";
+import { useAuthenticationStore, useAuthorizationStore } from "../../hooks/store";
 import { AuthenticationStack } from "./Authentication/Stack";
 import CommunityStack from "./Community/Stack";
 import ProfileStack from "./Profile/Stack";
@@ -14,9 +14,6 @@ const Tab = createBottomTabNavigator();
 const Navigation = observer(() => {
     const authorizationStore = useAuthorizationStore();
     const authenticationStore = useAuthenticationStore();
-    const loggingStore = useLoggingStore();
-
-    loggingStore.register("Navigation.tsx: loading navigation");
 
     return (
         <NavigationContainer>
