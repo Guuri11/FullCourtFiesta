@@ -3,7 +3,7 @@ import Navigation from "../router/Navigation";
 import LoadingPage from "../design/common/Loading";
 import { getData } from "../../hooks/useAsyncStorage";
 import { useAuthenticationStore, useAuthorizationStore } from "../../hooks/store";
-import { supabase } from "../../utils/supabase";
+import { supabase } from "../../../infrastructure/persistance/supabase";
 
 const Security = () => {
     const authorizationStore = useAuthorizationStore();

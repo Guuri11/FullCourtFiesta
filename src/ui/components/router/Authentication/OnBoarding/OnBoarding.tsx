@@ -5,9 +5,9 @@ import { Image } from "@rneui/base";
 import { useAuthorizationStore } from "../../../../hooks/store";
 import { useTheme } from "@rneui/themed";
 import { useTranslation } from "react-i18next";
-import "../../../../locales/index"
+import "../../../../../infrastructure/locales/index"
 import LottieView from "lottie-react-native";
-import { log } from "../../../../utils/logger";
+import { log } from "../../../../../infrastructure/config/logger";
 
 export default function OnBoarding({ navigation }) {
     const { t } = useTranslation();
@@ -23,19 +23,19 @@ export default function OnBoarding({ navigation }) {
             key: 1,
             title: t("welcome_to_fullcourtfiesta"),
             text: t("your_app_to_find_and_play_with_other_fans"),
-            image: require("../../../../../assets/slider-1.png"),
+            image: require("../../../../../../assets/slider-1.png"),
         },
         {
             key: 2,
             title: t("dominate_with_your_friends"),
             text: t("chat_invite_join"),
-            image: require("../../../../../assets/slider-2.png"),
+            image: require("../../../../../../assets/slider-2.png"),
         },
         {
             key: 3,
             title: t("from_rookie_to_hall_of_fame"),
             text: t("track_your_stats_get_feedback"),
-            image: require("../../../../../assets/slider-3.png"),
+            image: require("../../../../../../assets/slider-3.png"),
         },
     ];
 
@@ -79,7 +79,7 @@ export default function OnBoarding({ navigation }) {
                     }}
                     loop={false}
                     onAnimationFinish={finishOnBoarding}
-                    source={require("../../../../../assets/lottie/basketballHoop.json")}
+                    source={require("../../../../../../assets/lottie/basketballHoop.json")}
                 />
             </View>
         );

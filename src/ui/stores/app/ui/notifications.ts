@@ -5,7 +5,7 @@ import _ from "lodash/fp";
 import { Resetable } from "../../interfaces/resetable";
 
 import UIStore from ".";
-import { log } from "../../../utils/logger";
+import { log } from "../../../../infrastructure/config/logger";
 
 export type NotificationType = "error" | "success" | "info";
 

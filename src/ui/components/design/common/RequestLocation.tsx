@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import { Dialog } from "@rneui/themed";
 import * as Location from "expo-location";
 import { useLocationStore } from "../../../hooks/store";
-import "../../../locales/index";
+import "../../../../infrastructure/locales/index";
 import { useTranslation } from "react-i18next";
-import { log } from "../../../utils/logger";
+import { log } from "../../../../infrastructure/config/logger";
 
 type RequestLocationProps = {
     isVisible: boolean;

@@ -5,7 +5,7 @@ import MapView, { MapMarker } from "react-native-maps";
 import RequestLocation from "../../design/common/RequestLocation";
 import { useLocationStore } from "../../../hooks/store";
 import { observer } from "mobx-react-lite";
-import { log } from "../../../utils/logger";
+import { log } from "../../../../infrastructure/config/logger";
 
 const Home = observer(() => {
     const [showRequestLocationModal, setShowRequestLocationModal] = useState(false);

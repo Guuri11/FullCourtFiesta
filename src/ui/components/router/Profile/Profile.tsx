@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
-import { supabase } from "../../../utils/supabase";
+import React, { useState, useEffect } from "react";
+import { supabase } from "../../../../infrastructure/persistance/supabase";
 import { StyleSheet, View, Alert, Button } from "react-native";
-import { Session } from "@supabase/supabase-js";
 import { Input } from "@rneui/themed";
 import { useAuthenticationStore } from "../../../hooks/store";
 

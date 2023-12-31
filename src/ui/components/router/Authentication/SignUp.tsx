@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import Container from "../../design/layout/Container";
 import { Button, Text, makeStyles } from "@rneui/themed";
-import "../../../locales/index";
+import "../../../../infrastructure/locales/index";
 import { useTranslation } from "react-i18next";
 import { useAuthenticationStore, useUIStore } from "../../../hooks/store";
-import { supabase } from "../../../utils/supabase";
+import { supabase } from "../../../../infrastructure/persistance/supabase";
 import { View } from "react-native";
 import CustomInput from "../../design/common/Form/Input";
 import Anchor from "../../design/common/Anchor";
-import { log } from "../../../utils/logger";
+import { log } from "../../../../infrastructure/config/logger";
 
 const SignUp = () => {
     const styles = useStyles();
