@@ -3,11 +3,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OnBoarding from "./OnBoarding/OnBoarding";
 import { observer } from "mobx-react-lite";
 import { useAuthenticationStore, useAuthorizationStore } from "../../../hooks/store";
-import Authentication from "./Authentication";
+import SignIn from "./SignIn";
+import SignUp from "./SignUp";
 
 const Stack = createNativeStackNavigator();
 
-type Routes = "Authentication" | "OnBoarding";
+type Routes = "SignIn" | "OnBoarding";
 
 export const AuthenticationStack = observer(() => {
     const [initialRoute, setInitialRoute] = useState<Routes>(null);
@@ -16,7 +17,7 @@ export const AuthenticationStack = observer(() => {
 
     useEffect(() => {
         if (!authenticationStore.isAuthenticated) {
-            setInitialRoute("Authentication");
+            setInitialRoute("SignIn");
         }
         if (authorizationStore.showOnboarding === "1") {
             setInitialRoute("OnBoarding");
@@ -29,12 +30,8 @@ export const AuthenticationStack = observer(() => {
 
     return (
         <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
-            <Stack.Screen
-                name='Authentication'
-                component={Authentication}
-                options={{ headerShown: false }}
-            />
-
+            <Stack.Screen name='SignIn' component={SignIn} options={{ headerShown: false }} />
+            <Stack.Screen name='SignUp' component={SignUp} options={{ headerShown: false }} />
             <Stack.Screen
                 name='OnBoarding'
                 component={OnBoarding}

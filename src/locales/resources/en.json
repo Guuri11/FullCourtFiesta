@@ -10,5 +10,15 @@
     "allow_location_access": "Allow access to the exact location",
     "to_register_activities_in_fullcourtfiesta": "To register activities in FullCourtFiesta, you will need to allow access to the exact location",
     "deny": "Deny",
-    "allow": "Allow"
+    "allow": "Allow",
+    "sign_in": "Sign in",
+    "welcome_back": "Welcome back! Sign in to connect with other ballers",
+    "email": "Email",
+    "password": "Password",
+    "dont_have_account": "Don't have account?",
+    "sign_up": "Sign up",
+    "log_in": "Log in",
+    "start_your_career_here": "Start your career here",
+    "create_account": "Create account",
+    "already_have_account": "Already have an account?"
 }

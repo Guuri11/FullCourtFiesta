@@ -10,5 +10,15 @@
     "allow_location_access": "Permite acceso a la ubicación exacta",
     "to_register_activities_in_fullcourtfiesta": "Para registrar actividades en FullCourtFiesta, será necesario que permitas el acceso a la ubicación exacta",
     "deny": "Denegar",
-    "allow": "Permitir"
+    "allow": "Permitir",
+    "sign_in": "Inicio de sesión",
+    "welcome_back": "¡Bienvenido de vuelta! Inicia sesión para conectarte con otros ballers.",
+    "email": "Email",
+    "password": "Contraseña",
+    "dont_have_account": "¿No tienes cuenta aún?",
+    "sign_up": "Regístrate",
+    "log_in": "Iniciar sesión",
+    "start_your_career_here": "Tu carrera empieza aquí",
+    "create_account": "Crear cuenta",
+    "already_have_account": "¿Ya tienes una cuenta?"
 }

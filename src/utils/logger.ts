@@ -25,4 +25,6 @@ const defaultConfig = {
     printDate: true,
     enabled: true,
 };
-export const log = logger.createLogger<"debug" | "info" | "warn" | "error">(defaultConfig);
+export const log = logger.createLogger<"debug" | "info" | "warn" | "error" | "success">(
+    defaultConfig,
+);
