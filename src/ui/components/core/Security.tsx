@@ -4,6 +4,7 @@ import LoadingPage from "../design/common/Loading";
 import { getData } from "../../hooks/useAsyncStorage";
 import { useAuthenticationStore, useAuthorizationStore } from "../../hooks/store";
 import { supabase } from "../../../infrastructure/persistance/supabase";
+import { log } from "../../../infrastructure/config/logger";
 
 const Security = () => {
     const authorizationStore = useAuthorizationStore();
@@ -25,7 +26,8 @@ const Security = () => {
             authenticationStore.setSession(session);
         });
 
-        supabase.auth.onAuthStateChange((_event, session) => {
+        supabase.auth.onAuthStateChange((event, session) => {
+            log.info("The session has been updated: " + event);
             authenticationStore.setSession(session);
         });
     }, [authorizationStore.showOnboarding]);
