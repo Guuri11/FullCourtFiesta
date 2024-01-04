@@ -1,134 +1,175 @@
-import React, { useState, useEffect } from "react";
-import { supabase } from "../../../../infrastructure/persistance/supabase";
-import { StyleSheet, View, Alert, Button } from "react-native";
-import { Input } from "@rneui/themed";
-import { useAuthenticationStore } from "../../../hooks/store";
+import { Image, Text, makeStyles } from "@rneui/themed";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { View } from "react-native";
+import { PlayerServiceType } from "../../../../application/PlayerService";
+import { Position } from "../../../../domain/Player/Player";
+import { PlayerRepositoryI } from "../../../../domain/Player/PlayerRepository";
+import "../../../../infrastructure/locales/index";
+import { useAppStore, useAuthenticationStore, useUIStore } from "../../../hooks/store";
+import { observer } from "mobx-react-lite";
 
-export default function Account() {
+const Profile = observer(() => {
     const [loading, setLoading] = useState(true);
-    const [username, setUsername] = useState("");
-    const [website, setWebsite] = useState("");
-    const [avatarUrl, setAvatarUrl] = useState("");
     const authenticationStore = useAuthenticationStore();
+    const [username, setUsername] = useState(null);
+    const [fullName, setFullName] = useState("");
+    const [bio, setBio] = useState(null);
+    const [position, setPosition] = useState<Position>(null);
+    const appStore = useAppStore();
+    const uiStore = useUIStore();
+    const styles = useStyles();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (authenticationStore.session) getProfile();
     }, [authenticationStore.session]);
 
     async function getProfile() {
-        try {
-            setLoading(true);
-            if (!authenticationStore.session?.user) throw new Error("No user on the session!");
+        const { service, repository } = appStore.getService("player") as {
+            service: PlayerServiceType;
+            repository: PlayerRepositoryI;
+        };
 
-            const { data, error, status } = await supabase
-                .from("profiles")
-                .select(`username, website, avatar_url`)
-                .eq("id", authenticationStore.session?.user.id)
-                .single();
-            if (error && status !== 406) {
-                throw error;
-            }
-
-            if (data) {
-                setUsername(data.username);
-                setWebsite(data.website);
-                setAvatarUrl(data.avatar_url);
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                Alert.alert(error.message);
-            }
-        } finally {
-            setLoading(false);
-        }
+        setLoading(true);
+        service
+            .getProfile(repository, authenticationStore.session)
+            .then(({ code, message, data }) => {
+                if (code !== 200) {
+                    uiStore.notification.addNotification(t(message));
+                } else {
+                    authenticationStore.setUser(data);
+                }
+            });
     }
 
-    async function updateProfile({
-        username,
-        website,
-        avatar_url,
-    }: {
-        username: string;
-        website: string;
-        avatar_url: string;
-    }) {
-        try {
-            setLoading(true);
-            if (!authenticationStore.session?.user) throw new Error("No user on the session!");
+    /**
+     * TODO: refactor this
+     */
+    const HeaderImage = () => {
+        const avatarUrl = authenticationStore?.user?.avatar_url;
 
-            const updates = {
-                id: authenticationStore.session?.user.id,
-                username,
-                website,
-                avatar_url,
-                updated_at: new Date(),
-            };
-
-            const { error } = await supabase.from("profiles").upsert(updates);
-
-            if (error) {
-                throw error;
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                Alert.alert(error.message);
-            }
-        } finally {
-            setLoading(false);
+        if (avatarUrl) {
+            return <Image style={styles.headerImage} source={{ uri: avatarUrl }} />;
         }
-    }
-
-    const handleSignOut = () => {
-        supabase.auth.signOut();
-        authenticationStore.setSession(null);
+        return <View style={styles.headerImageDefault} />;
     };
 
+    async function updateProfile() {
+        setLoading(true);
+        const { service, repository } = appStore.getService("player") as {
+            service: PlayerServiceType;
+            repository: PlayerRepositoryI;
+        };
+
+        service
+            .completeProfile(repository, {
+                fullName,
+                username,
+                position,
+                bio,
+                userId: authenticationStore.session.user.id,
+            })
+            .then(({ code, message }) => {
+                if (code === 500) {
+                    uiStore.notification.addNotification(message, "error");
+                }
+
+                if (code === 200) {
+                    authenticationStore.setUser({
+                        ...authenticationStore.user,
+                        username,
+                        position,
+                        bio,
+                    });
+                }
+                setLoading(false);
+            });
+    }
+
     return (
-        <View style={styles.container}>
-            <View style={[styles.verticallySpaced, styles.mt20]}>
-                <Input label='Email' value={authenticationStore.session?.user?.email} disabled />
-            </View>
-            <View style={styles.verticallySpaced}>
-                <Input
-                    label='Username'
-                    value={username || ""}
-                    onChangeText={(text) => setUsername(text)}
-                />
-            </View>
-            <View style={styles.verticallySpaced}>
-                <Input
-                    label='Website'
-                    value={website || ""}
-                    onChangeText={(text) => setWebsite(text)}
-                />
-            </View>
-
-            <View style={[styles.verticallySpaced, styles.mt20]}>
-                <Button
-                    title={loading ? "Loading ..." : "Update"}
-                    onPress={() => updateProfile({ username, website, avatar_url: avatarUrl })}
-                    disabled={loading}
-                />
-            </View>
-
-            <View style={styles.verticallySpaced}>
-                <Button title='Sign Out' onPress={handleSignOut} />
+        <View>
+            <HeaderImage />
+            <View style={styles.container}>
+                <View style={styles.usernameContainer}>
+                    <Image
+                        style={styles.avatarImage}
+                        containerStyle={styles.avatarContainer}
+                        source={{
+                            uri: authenticationStore?.user?.avatar_url,
+                        }}
+                    />
+                    <View style={styles.userDataContainer}>
+                        <Text h4>{authenticationStore?.user?.full_name}</Text>
+                        <Text style={styles.username}>{authenticationStore?.user?.username}</Text>
+                    </View>
+                </View>
+                <View style={styles.bioContainer}>
+                    <Text style={styles.position}>
+                        {t(authenticationStore?.user?.position.toLowerCase())}
+                    </Text>
+                    <Text>{authenticationStore?.user?.bio}</Text>
+                </View>
+                <View style={styles.followingContainer}>
+                    <Text>123 Seguidores</Text>
+                    <Text>123 Siguiendo</Text>
+                </View>
             </View>
         </View>
     );
-}
-
-const styles = StyleSheet.create({
-    container: {
-        marginTop: 40,
-        padding: 12,
-    },
-    verticallySpaced: {
-        paddingTop: 4,
-        paddingBottom: 4,
-        alignSelf: "stretch",
-    },
-    mt20: {
-        marginTop: 20,
-    },
 });
+
+export default Profile;
+
+const useStyles = makeStyles((theme) => ({
+    headerImage: {
+        width: "100%",
+        height: 155,
+        objectFit: "cover",
+    },
+    headerImageDefault: {
+        width: "100%",
+        height: 155,
+        backgroundColor: theme.colors.primary,
+    },
+    avatarImage: {
+        height: 120,
+        width: 120,
+        objectFit: "cover",
+    },
+    avatarContainer: {
+        marginTop: -40,
+        borderRadius: 60,
+        width: 120,
+        height: 120,
+    },
+    container: {
+        paddingHorizontal: 16,
+    },
+    usernameContainer: {
+        display: "flex",
+        flexDirection: "row",
+    },
+    userDataContainer: {
+        marginTop: 10,
+        marginLeft: 6,
+    },
+    username: {
+        color: theme.colors.grey3,
+    },
+    bioContainer: {
+        marginTop: 10,
+    },
+    position: {
+        fontSize: 22,
+    },
+    followingContainer: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around",
+        marginTop: 16,
+    },
+    followCounter: {
+        fontWeight: "bold",
+    },
+}));
