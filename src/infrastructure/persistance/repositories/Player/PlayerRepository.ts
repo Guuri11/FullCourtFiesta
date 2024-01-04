@@ -49,11 +49,13 @@ const getProfile = async (userSession: Session) => {
         }
 
         const { data, error, status } = await supabase
-            .from("profiles")
+            .from("players")
             .select(`username, position, bio, avatar_url, full_name`)
             .eq("id", userSession.user.id)
             .single();
         if (error && status !== 406) {
+            console.log(error, status);
+
             log.error("User could not get profile data from supabase 😢");
             return { code: 400, message: "could_not_get_user_profile", data: null };
         }
