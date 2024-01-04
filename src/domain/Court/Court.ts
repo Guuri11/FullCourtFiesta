@@ -5,6 +5,10 @@ export type Court = {
     latitude: string;
     longitude: string;
     playersNear: number;
-    createdAt: string;
-    updatedAt: string;
 };
+
+export type CourtRs = {
+    code: number;
+    message: string;
+    data: Court;
+}

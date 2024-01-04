@@ -12,3 +12,9 @@ export type Event = {
     createdAt: string;
     updatedAt: string;
 };
+
+export type EventRs = {
+    code: number;
+    message: string;
+    data: Event;
+};
