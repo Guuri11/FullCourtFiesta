@@ -34,6 +34,7 @@
     "power_forward": "Power Forward",
     "center": "Center",
     "save": "Save",
+    "edit": "Edit",
     "no_user_on_the_session": "No user on the session",
     "could_not_get_user_profile": "Could not get user profile"
 }

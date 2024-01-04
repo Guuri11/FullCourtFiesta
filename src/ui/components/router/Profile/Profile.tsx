@@ -1,25 +1,21 @@
-import { Image, Text, makeStyles } from "@rneui/themed";
-import React, { useEffect, useState } from "react";
+import { Button, Image, Text, makeStyles } from "@rneui/themed";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { PlayerServiceType } from "../../../../application/PlayerService";
-import { Position } from "../../../../domain/Player/Player";
 import { PlayerRepositoryI } from "../../../../domain/Player/PlayerRepository";
 import "../../../../infrastructure/locales/index";
 import { useAppStore, useAuthenticationStore, useUIStore } from "../../../hooks/store";
 import { observer } from "mobx-react-lite";
+import { useNavigation } from "@react-navigation/native";
 
 const Profile = observer(() => {
-    const [loading, setLoading] = useState(true);
     const authenticationStore = useAuthenticationStore();
-    const [username, setUsername] = useState(null);
-    const [fullName, setFullName] = useState("");
-    const [bio, setBio] = useState(null);
-    const [position, setPosition] = useState<Position>(null);
     const appStore = useAppStore();
     const uiStore = useUIStore();
     const styles = useStyles();
     const { t } = useTranslation();
+    const navigation = useNavigation();
 
     useEffect(() => {
         if (authenticationStore.session) getProfile();
@@ -31,7 +27,6 @@ const Profile = observer(() => {
             repository: PlayerRepositoryI;
         };
 
-        setLoading(true);
         service
             .getProfile(repository, authenticationStore.session)
             .then(({ code, message, data }) => {
@@ -55,37 +50,10 @@ const Profile = observer(() => {
         return <View style={styles.headerImageDefault} />;
     };
 
-    async function updateProfile() {
-        setLoading(true);
-        const { service, repository } = appStore.getService("player") as {
-            service: PlayerServiceType;
-            repository: PlayerRepositoryI;
-        };
-
-        service
-            .completeProfile(repository, {
-                fullName,
-                username,
-                position,
-                bio,
-                userId: authenticationStore.session.user.id,
-            })
-            .then(({ code, message }) => {
-                if (code === 500) {
-                    uiStore.notification.addNotification(message, "error");
-                }
-
-                if (code === 200) {
-                    authenticationStore.setUser({
-                        ...authenticationStore.user,
-                        username,
-                        position,
-                        bio,
-                    });
-                }
-                setLoading(false);
-            });
-    }
+    const handleEdit = () => {
+        //@ts-ignore
+        navigation.navigate("ProfileEdit");
+    };
 
     return (
         <View>
@@ -99,9 +67,14 @@ const Profile = observer(() => {
                             uri: authenticationStore?.user?.avatar_url,
                         }}
                     />
-                    <View style={styles.userDataContainer}>
-                        <Text h4>{authenticationStore?.user?.full_name}</Text>
-                        <Text style={styles.username}>{authenticationStore?.user?.username}</Text>
+                    <View style={styles.userDataAndEditContainer}>
+                        <View style={styles.userDataContainer}>
+                            <Text h4>{authenticationStore?.user?.full_name}</Text>
+                            <Text style={styles.username}>
+                                {authenticationStore?.user?.username}
+                            </Text>
+                        </View>
+                        <Button onPress={handleEdit}>{t("edit")}</Button>
                     </View>
                 </View>
                 <View style={styles.bioContainer}>
@@ -166,10 +139,18 @@ const useStyles = makeStyles((theme) => ({
     followingContainer: {
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-around",
         marginTop: 16,
+        width: "60%",
+        justifyContent: "space-between",
     },
     followCounter: {
         fontWeight: "bold",
+    },
+    userDataAndEditContainer: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "66%",
     },
 }));
