@@ -5,10 +5,11 @@ import { observer } from "mobx-react-lite";
 import { useAuthenticationStore, useAuthorizationStore } from "../../../hooks/store";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
+import CompleteProfile from "./CompleteProfile";
 
 const Stack = createNativeStackNavigator();
 
-type Routes = "SignIn" | "OnBoarding";
+type Routes = "SignIn" | "OnBoarding" | "CompleteProfile";
 
 export const AuthenticationStack = observer(() => {
     const [initialRoute, setInitialRoute] = useState<Routes>(null);
@@ -22,6 +23,10 @@ export const AuthenticationStack = observer(() => {
         if (authorizationStore.showOnboarding === "1") {
             setInitialRoute("OnBoarding");
         }
+
+        if (authenticationStore.userIsNew) {
+            setInitialRoute("CompleteProfile")
+        }
     }, [authorizationStore.showOnboarding]);
 
     if (!initialRoute) {
@@ -32,6 +37,7 @@ export const AuthenticationStack = observer(() => {
         <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
             <Stack.Screen name='SignIn' component={SignIn} options={{ headerShown: false }} />
             <Stack.Screen name='SignUp' component={SignUp} options={{ headerShown: false }} />
+            <Stack.Screen name='CompleteProfile' component={CompleteProfile} options={{ headerShown: false }} />
             <Stack.Screen
                 name='OnBoarding'
                 component={OnBoarding}

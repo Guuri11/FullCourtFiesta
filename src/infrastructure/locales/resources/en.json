@@ -20,5 +20,20 @@
     "log_in": "Log in",
     "start_your_career_here": "Start your career here",
     "create_account": "Create account",
-    "already_have_account": "Already have an account?"
+    "already_have_account": "Already have an account?",
+    "please_confirm_email": "Please, confirm the registration in your email",
+    "complete_your_profile": "Complete your profile",
+    "add_additional_info": "Add additional data so other hoopers will know you better",
+    "username": "Username",
+    "full_name": "Your name",
+    "position": "Position",
+    "bio": "Bio",
+    "point_guard": "Point Guard",
+    "shooting_guard": "Shooting Guard",
+    "small_forward": "Small Forward",
+    "power_forward": "Power Forward",
+    "center": "Center",
+    "save": "Save",
+    "no_user_on_the_session": "No user on the session",
+    "could_not_get_user_profile": "Could not get user profile"
 }

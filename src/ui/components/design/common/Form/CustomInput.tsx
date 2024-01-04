@@ -1,7 +1,7 @@
 import React from 'react'
-import { Input } from '@rneui/themed'
+import { Input, InputProps } from '@rneui/themed'
 
-type InputProps = {
+interface CustomInputProps {
     placeholder: string,
     onChangeText: (value: string) => void,
     value: string,
@@ -9,13 +9,15 @@ type InputProps = {
     secureTextEntry?: boolean
 }
 
-const CustomInput = (props: InputProps) => {
+const CustomInput = (props: CustomInputProps & InputProps) => {
     return (
         <Input
             placeholder={props.placeholder}
             secureTextEntry={props.secureTextEntry}
             onChangeText={props.onChangeText}
             value={props.value}
+            multiline={props.multiline}
+            numberOfLines={props.numberOfLines}
             autoCapitalize={props.autoCapitalize}
         />
     )

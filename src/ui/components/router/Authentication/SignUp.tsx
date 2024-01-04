@@ -3,12 +3,13 @@ import Container from "../../design/layout/Container";
 import { Button, Text, makeStyles } from "@rneui/themed";
 import "../../../../infrastructure/locales/index";
 import { useTranslation } from "react-i18next";
-import { useAuthenticationStore, useUIStore } from "../../../hooks/store";
-import { supabase } from "../../../../infrastructure/persistance/supabase";
+import { useAppStore, useAuthenticationStore, useUIStore } from "../../../hooks/store";
 import { View } from "react-native";
-import CustomInput from "../../design/common/Form/Input";
+import CustomInput from "../../design/common/Form/CustomInput";
 import Anchor from "../../design/common/Anchor";
-import { log } from "../../../../infrastructure/config/logger";
+import { useNavigation } from "@react-navigation/native";
+import { AuthenticationRepositoryI } from "../../../../domain/Authentication/AuthenticationRepository";
+import { AuthenticationServiceType } from "../../../../application/AuthenticationService";
 
 const SignUp = () => {
     const styles = useStyles();
@@ -17,30 +18,34 @@ const SignUp = () => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const uiStore = useUIStore();
+    const navigation = useNavigation();
+    const appStore = useAppStore();
     const authenticationStore = useAuthenticationStore();
 
     async function signUpWithEmail() {
         setLoading(true);
 
-        const {
-            data: { session },
-            error,
-        } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-        });
+        const { service, repository } = appStore.getService("authentication") as {
+            service: AuthenticationServiceType;
+            repository: AuthenticationRepositoryI;
+        };
 
-        if (error) {
-            uiStore.notification.addNotification(error.message, "error");
-        }
+        service.signUp(repository, { email, password }).then(({ code, message, data }) => {
+            if (code === 200) {
+                authenticationStore.setUserIsNew(true);
+                //@ts-ignore
+                navigation.navigate("CompleteProfile");
+            }
 
-        if (!session) {
-            uiStore.notification.addNotification("Por favor, confirma el registro en tu email");
-        } else {
+            if (code === 201) {
+                uiStore.notification.addNotification(message);
+            }
+
+            if (code !== 200 && code !== 201) {
+                uiStore.notification.addNotification(message, "error");
+            }
             setLoading(false);
-            authenticationStore.setSession(session);
-            log.success("The user has signed up successfully 👏");
-        }
+        });
     }
 
     return (

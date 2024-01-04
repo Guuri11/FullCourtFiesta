@@ -20,5 +20,20 @@
     "log_in": "Iniciar sesión",
     "start_your_career_here": "Tu carrera empieza aquí",
     "create_account": "Crear cuenta",
-    "already_have_account": "¿Ya tienes una cuenta?"
+    "already_have_account": "¿Ya tienes una cuenta?",
+    "please_confirm_email": "Por favor, confirma el registro en tu email",
+    "complete_your_profile": "Completa tu perfil",
+    "add_additional_info": "Añade información adicional para que otros jugadores te conozcan mejor",
+    "full_name": "Tu nombre",
+    "username": "Apodo",
+    "position": "Posición",
+    "bio": "Biografía",
+    "point_guard": "Base",
+    "shooting_guard": "Escolta",
+    "small_forward": "Alero",
+    "power_forward": "Ala-Pivot",
+    "center": "Pivot",
+    "save": "Guardar",
+    "no_user_on_the_session": "Inicio de sesión necesaria",
+    "could_not_get_user_profile": "No se ha podido obtener los datos del perfil"
 }

@@ -17,7 +17,9 @@ const Navigation = observer(() => {
 
     return (
         <NavigationContainer>
-            {authorizationStore.showOnboarding == "0" && authenticationStore.isAuthenticated ? (
+            {authorizationStore.showOnboarding == "0" &&
+            !authenticationStore.userIsNew &&
+            authenticationStore.isAuthenticated ? (
                 <MainNavigation />
             ) : (
                 <AuthenticationNavigation />

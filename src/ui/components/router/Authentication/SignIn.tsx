@@ -4,11 +4,11 @@ import Container from "../../design/layout/Container";
 import { Button, Text, makeStyles } from "@rneui/themed";
 import "../../../../infrastructure/locales/index";
 import { useTranslation } from "react-i18next";
-import { useAuthenticationStore, useUIStore } from "../../../hooks/store";
-import { supabase } from "../../../../infrastructure/persistance/supabase";
-import CustomInput from "../../design/common/Form/Input";
+import { useAppStore, useAuthenticationStore, useUIStore } from "../../../hooks/store";
+import CustomInput from "../../design/common/Form/CustomInput";
 import Anchor from "../../design/common/Anchor";
-import { log } from "../../../../infrastructure/config/logger";
+import { AuthenticationServiceType } from "../../../../application/AuthenticationService";
+import { AuthenticationRepositoryI } from "../../../../domain/Authentication/AuthenticationRepository";
 
 const SignIn = () => {
     const styles = useStyles();
@@ -18,28 +18,27 @@ const SignIn = () => {
     const [loading, setLoading] = useState(false);
     const uiStore = useUIStore();
     const authenticationStore = useAuthenticationStore();
+    const appStore = useAppStore();
 
     async function signInWithEmail() {
         setLoading(true);
-        const {
-            error,
-            data: { session },
-        } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: password,
-        });
 
-        if (error) {
-            uiStore.notification.addNotification(error.message, "error");
-        }
+        const { service, repository } = appStore.getService("authentication") as { service: AuthenticationServiceType, repository: AuthenticationRepositoryI};
 
-        if (!session) {
-            uiStore.notification.addNotification("Por favor, confirma el registro en tu email");
-        } else {
+        service.signIn(repository, { email, password }).then(({ code, message, data }) => {
+            if (code === 200) {
+                authenticationStore.setSession(data);
+            }
+
+            if (code === 201) {
+                uiStore.notification.addNotification(message);
+            }
+
+            if (code !== 200 && code !== 201) {
+                uiStore.notification.addNotification(message, "error");
+            }
             setLoading(false);
-            authenticationStore.setSession(session);
-            log.success("The user has signed in successfully 👏");
-        }
+        });
     }
 
     return (

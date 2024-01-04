@@ -129,8 +129,6 @@ const Home = observer(() => {
                 >
                     {courts.length > 0 &&
                         courts.map((court) => {
-                            console.log(court);
-
                             return (
                                 <MapMarker
                                     key={court.id}
