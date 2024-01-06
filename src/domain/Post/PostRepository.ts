@@ -1,8 +1,8 @@
-import { PostRs } from "./Post";
+import { Post, PostCreateRq, PostRs } from "./Post";
 
-export interface PostRepository {
-    create: () => Promise<PostRs>;
-    update: (id: number) => Promise<PostRs>;
-    delete: (id: number) => Promise<null>;
-    find: () => Promise<PostRs[]>;
+export interface PostRepositoryI {
+    create: (post: PostCreateRq) => Promise<PostRs>;
+    update: (post: Post) => Promise<PostRs>;
+    remove: (id: number) => Promise<PostRs>;
+    find: () => Promise<Post[]>;
 }
