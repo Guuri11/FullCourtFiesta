@@ -1,5 +1,6 @@
 import { Session } from "@supabase/supabase-js";
 import {
+    FindPlayerResponse,
     PlayerCompleProfileRequest,
     PlayerCompleProfileResponse,
     PlayerGetProfileResponse,
@@ -15,6 +16,11 @@ export type PlayerServiceType = {
         repository: PlayerRepositoryI,
         userSession: Session,
     ) => Promise<PlayerGetProfileResponse>;
+    find: (
+        repository: PlayerRepositoryI,
+        id: string,
+        columns: string[],
+    ) => Promise<FindPlayerResponse>;
 };
 
 export const PlayerService: PlayerServiceType = {
@@ -22,4 +28,6 @@ export const PlayerService: PlayerServiceType = {
         repository.completeProfile(request),
     getProfile: (repository: PlayerRepositoryI, userSession: Session) =>
         repository.getProfile(userSession),
+    find: (repository: PlayerRepositoryI, id: string, columns: string[]) =>
+        repository.find(id, columns),
 };

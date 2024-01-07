@@ -27,6 +27,11 @@ export type PlayerGetProfileResponse = {
     data: Player;
 };
 
+export type FindPlayerResponse = {
+    code: number;
+    message: string;
+    data: Player;
+};
 export type Position =
     | "POINT_GUARD"
     | "SHOOTING_GUARD"

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { View } from "react-native";
 import React, { useState } from "react";
 import CustomInput from "../../design/common/Form/CustomInput";
 import "../../../../infrastructure/locales/index";

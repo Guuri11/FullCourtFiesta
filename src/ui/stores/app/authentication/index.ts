@@ -36,9 +36,6 @@ class AuthenticationStore implements Resetable {
 
     @action setUser(user: Player.Player) {
         this.user = user;
-        this.user.avatar_url =
-            user.avatar_url ||
-            "https://cdn.pixabay.com/photo/2020/06/06/04/46/iron-man-5265222_1280.jpg";
     }
 
     @action setSession(session: Session) {

@@ -1,5 +1,6 @@
 import { Session } from "@supabase/supabase-js";
 import {
+    FindPlayerResponse,
     PlayerCompleProfileRequest,
     PlayerCompleProfileResponse,
     PlayerGetProfileResponse,
@@ -8,4 +9,5 @@ import {
 export interface PlayerRepositoryI {
     completeProfile: (request: PlayerCompleProfileRequest) => Promise<PlayerCompleProfileResponse>;
     getProfile: (userSession: Session) => Promise<PlayerGetProfileResponse>;
+    find: (id: string, columns: string[]) => Promise<FindPlayerResponse>;
 }

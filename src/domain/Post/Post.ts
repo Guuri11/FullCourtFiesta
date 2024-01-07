@@ -5,7 +5,6 @@ export type Post = {
     player: Player;
     content: string;
     photo: string;
-    likes: number;
     event: Event;
     created_at: string;
 };

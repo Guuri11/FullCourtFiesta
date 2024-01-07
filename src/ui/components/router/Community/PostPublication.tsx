@@ -8,7 +8,6 @@ import { Avatar } from "@rneui/base";
 type PostPublicationType = {
     post: Post;
 };
-// TODO: handle likes
 // TODO: handle event dialog
 // TODO: handle go to user profile when clicking on avatar
 export const PostPublication = ({ post }: PostPublicationType) => {
@@ -28,15 +27,6 @@ export const PostPublication = ({ post }: PostPublicationType) => {
                 <Text>{post.content}</Text>
                 {post.photo && <Image style={styles.postImage} source={{ uri: post.photo }} />}
                 <View style={styles.actionsContainer}>
-                    <Button
-                        containerStyle={styles.actionButton}
-                        radius={"sm"}
-                        size='sm'
-                        type='clear'
-                    >
-                        <Icon name='heart-outline' type='ionicon' iconStyle={styles.actionIcon} />
-                        <Text style={styles.likesText}>{post.likes}</Text>
-                    </Button>
                     <Button
                         containerStyle={styles.actionButton}
                         radius={"sm"}
@@ -80,10 +70,6 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 12,
         borderWidth: 2,
         borderColor: theme.colors.grey3,
-    },
-    likesText: {
-        color: theme.colors.primary,
-        marginLeft: 4,
     },
     actionsContainer: {
         position: "absolute",

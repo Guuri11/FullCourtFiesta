@@ -1,13 +1,20 @@
-import { Button, Image, Text, makeStyles } from "@rneui/themed";
-import React, { useEffect } from "react";
+import { Avatar, Button, Divider, Image, Text, makeStyles } from "@rneui/themed";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { FlatList, View } from "react-native";
 import { PlayerServiceType } from "../../../../application/PlayerService";
 import { PlayerRepositoryI } from "../../../../domain/Player/PlayerRepository";
 import "../../../../infrastructure/locales/index";
 import { useAppStore, useAuthenticationStore, useUIStore } from "../../../hooks/store";
 import { observer } from "mobx-react-lite";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { getAvatarName } from "../../../../utils";
+import { Post } from "../../../../domain/Post/Post";
+import { PostServiceType } from "../../../../application/PostService";
+import { PostRepositoryI } from "../../../../domain/Post/PostRepository";
+import CreatePostFAB from "../../design/common/CreatePostFAB";
+import { PostPublication } from "../Community/PostPublication";
+import { HeaderImage } from "../../design/common/HeaderImage";
 
 const Profile = observer(() => {
     const authenticationStore = useAuthenticationStore();
@@ -16,39 +23,45 @@ const Profile = observer(() => {
     const styles = useStyles();
     const { t } = useTranslation();
     const navigation = useNavigation();
+    const [posts, setPosts] = useState<Post[]>([]);
 
     useEffect(() => {
-        if (authenticationStore.session) getProfile();
-    }, [authenticationStore.session]);
+        getPosts();
+    }, []);
 
-    async function getProfile() {
-        const { service, repository } = appStore.getService("player") as {
-            service: PlayerServiceType;
-            repository: PlayerRepositoryI;
+    useFocusEffect(
+        useCallback(() => {
+            const getProfile = async () => {
+                const { service, repository } = appStore.getService("player") as {
+                    service: PlayerServiceType;
+                    repository: PlayerRepositoryI;
+                };
+
+                service
+                    .getProfile(repository, authenticationStore.session)
+                    .then(({ code, message, data }) => {
+                        if (code !== 200) {
+                            uiStore.notification.addNotification(t(message));
+                        } else {
+                            authenticationStore.setUser(data);
+                        }
+                    });
+            };
+
+            if (authenticationStore.session) getProfile();
+        }, [authenticationStore.session]),
+    );
+
+    const getPosts = useCallback(() => {
+        const { service, repository } = appStore.getService("post") as {
+            service: PostServiceType;
+            repository: PostRepositoryI;
         };
 
-        service
-            .getProfile(repository, authenticationStore.session)
-            .then(({ code, message, data }) => {
-                if (code !== 200) {
-                    uiStore.notification.addNotification(t(message));
-                } else {
-                    authenticationStore.setUser(data);
-                }
-            });
-    }
-
-    /**
-     * TODO: refactor this
-     */
-    const HeaderImage = () => {
-        const avatarUrl = authenticationStore?.user?.avatar_url;
-
-        if (avatarUrl) {
-            return <Image style={styles.headerImage} source={{ uri: avatarUrl }} />;
-        }
-        return <View style={styles.headerImageDefault} />;
-    };
+        service.find(repository).then((data) => {
+            setPosts(data);
+        });
+    }, []);
 
     const handleEdit = () => {
         //@ts-ignore
@@ -56,16 +69,20 @@ const Profile = observer(() => {
     };
 
     return (
-        <View>
-            <HeaderImage />
+        <View style={{ height: "100%" }}>
+            <HeaderImage avatarUrl={authenticationStore.user?.avatar_url} />
             <View style={styles.container}>
                 <View style={styles.usernameContainer}>
-                    <Image
-                        style={styles.avatarImage}
+                    <Avatar
+                        rounded
+                        title={getAvatarName(authenticationStore.user?.username || "")}
+                        size={120}
+                        source={
+                            authenticationStore.user?.avatar_url && {
+                                uri: authenticationStore.user?.avatar_url,
+                            }
+                        }
                         containerStyle={styles.avatarContainer}
-                        source={{
-                            uri: authenticationStore?.user?.avatar_url,
-                        }}
                     />
                     <View style={styles.userDataAndEditContainer}>
                         <View style={styles.userDataContainer}>
@@ -88,6 +105,22 @@ const Profile = observer(() => {
                     <Text>123 Siguiendo</Text>
                 </View>
             </View>
+            <Divider />
+            <View>
+                <FlatList
+                    data={posts}
+                    renderItem={({ item }) => <PostPublication post={item} />}
+                    keyExtractor={(item) => String(item.id)}
+                    // Performance settings
+                    initialNumToRender={10} // Adjust based on your needs
+                    maxToRenderPerBatch={10}
+                    windowSize={21} // The default is 21, which is ~7 screens
+                    removeClippedSubviews={true} // Unmount components when they are off screen
+                    // Lazy loading images
+                    // You may integrate other libraries like 'react-native-fast-image' for better image performance
+                />
+            </View>
+            <CreatePostFAB />
         </View>
     );
 });
@@ -95,16 +128,6 @@ const Profile = observer(() => {
 export default Profile;
 
 const useStyles = makeStyles((theme) => ({
-    headerImage: {
-        width: "100%",
-        height: 155,
-        objectFit: "cover",
-    },
-    headerImageDefault: {
-        width: "100%",
-        height: 155,
-        backgroundColor: theme.colors.primary,
-    },
     avatarImage: {
         height: 120,
         width: 120,
@@ -113,8 +136,7 @@ const useStyles = makeStyles((theme) => ({
     avatarContainer: {
         marginTop: -40,
         borderRadius: 60,
-        width: 120,
-        height: 120,
+        backgroundColor: theme.colors.secondary,
     },
     container: {
         paddingHorizontal: 16,
@@ -139,7 +161,7 @@ const useStyles = makeStyles((theme) => ({
     followingContainer: {
         display: "flex",
         flexDirection: "row",
-        marginTop: 16,
+        marginVertical: 16,
         width: "60%",
         justifyContent: "space-between",
     },

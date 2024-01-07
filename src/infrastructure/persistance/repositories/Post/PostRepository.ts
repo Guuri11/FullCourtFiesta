@@ -49,9 +49,7 @@ const remove = async (id: number): Promise<PostRs> => {
 const find = async (): Promise<Post[]> => {
     let { data: posts, error } = await supabase
         .from("post")
-        .select(
-            "id, content, photo, likes, event_id, created_at, player(username, avatar_url, id)",
-        );
+        .select("id, content, photo, event_id, created_at, player(username, avatar_url, id)");
     if (error) {
         log.error(error.message);
         return [];
