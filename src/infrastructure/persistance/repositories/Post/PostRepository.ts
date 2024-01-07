@@ -47,13 +47,17 @@ const remove = async (id: number): Promise<PostRs> => {
 };
 
 const find = async (): Promise<Post[]> => {
-    let { data: post, error } = await supabase.from("post").select("*");
+    let { data: posts, error } = await supabase
+        .from("post")
+        .select(
+            "id, content, photo, likes, event_id, created_at, player(username, avatar_url, id)",
+        );
     if (error) {
         log.error(error.message);
         return [];
     }
-    log.info(`User fetching posts 📷 => ${JSON.stringify(post)}`);
-    return post;
+    log.info(`User fetching posts 📷 => ${JSON.stringify(posts)}`);
+    return posts as unknown as Post[];
 };
 
 export const PostRepository: PostRepositoryI = {

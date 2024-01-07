@@ -7,7 +7,7 @@ export type Post = {
     photo: string;
     likes: number;
     event: Event;
-    createdAt: string;
+    created_at: string;
 };
 
 export type PostCreateRq = {
