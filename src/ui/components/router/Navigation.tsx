@@ -2,6 +2,7 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeStack from "./Home/Stack";
+import SearchStack from "./Search/Stack";
 import { Icon } from "@rneui/themed";
 import { observer } from "mobx-react-lite";
 import { useAuthenticationStore, useAuthorizationStore } from "../../hooks/store";
@@ -43,6 +44,14 @@ const MainNavigation = () => {
             <Tab.Screen
                 name='HomeStack'
                 component={HomeStack}
+                options={{
+                    headerShown: false,
+                    tabBarShowLabel: false,
+                }}
+            />
+            <Tab.Screen
+                name='SearchStack'
+                component={SearchStack}
                 options={{
                     headerShown: false,
                     tabBarShowLabel: false,
@@ -94,6 +103,10 @@ const AuthenticationNavigation = () => (
 const getIcon = (route: string) => {
     if (route === "HomeStack") {
         return "basketball-outline";
+    }
+
+    if (route === "SearchStack") {
+        return "search-outline";
     }
 
     if (route === "CommunityStack") {

@@ -32,6 +32,11 @@ export type FindPlayerResponse = {
     message: string;
     data: Player;
 };
+export type SearchPlayerResponse = {
+    code: number;
+    message: string;
+    data: Player[];
+};
 export type Position =
     | "POINT_GUARD"
     | "SHOOTING_GUARD"

@@ -4,6 +4,7 @@ import {
     PlayerCompleProfileRequest,
     PlayerCompleProfileResponse,
     PlayerGetProfileResponse,
+    SearchPlayerResponse,
 } from "../domain/Player/Player";
 import { PlayerRepositoryI } from "../domain/Player/PlayerRepository";
 
@@ -21,6 +22,11 @@ export type PlayerServiceType = {
         id: string,
         columns: string[],
     ) => Promise<FindPlayerResponse>;
+    search: (
+        repository: PlayerRepositoryI,
+        query: string,
+        id: string,
+    ) => Promise<SearchPlayerResponse>;
 };
 
 export const PlayerService: PlayerServiceType = {
@@ -30,4 +36,6 @@ export const PlayerService: PlayerServiceType = {
         repository.getProfile(userSession),
     find: (repository: PlayerRepositoryI, id: string, columns: string[]) =>
         repository.find(id, columns),
+    search: (repository: PlayerRepositoryI, query: string, id: string) =>
+        repository.search(query, id),
 };

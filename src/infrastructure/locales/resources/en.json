@@ -37,5 +37,9 @@
   "edit": "Edit",
   "no_user_on_the_session": "No user on the session",
   "could_not_get_user_profile": "Could not get user profile",
-  "how_was_your_pickup_game": "How was you pick up game?!?!🏀"
+  "how_was_your_pickup_game": "How was you pick up game?!?!🏀",
+  "search_here": "Search here",
+  "courts": "Basketball courts",
+  "players": "Players",
+  "player_not_found": "Player not found"
 }

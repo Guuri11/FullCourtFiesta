@@ -5,6 +5,7 @@ import {
     PlayerCompleProfileRequest,
     PlayerCompleProfileResponse,
     Position,
+    SearchPlayerResponse,
 } from "../../../../domain/Player/Player";
 import { PlayerRepositoryI } from "../../../../domain/Player/PlayerRepository";
 import { log } from "../../../config/logger";
@@ -95,8 +96,26 @@ const find = async (id: string, columns: string[]): Promise<FindPlayerResponse> 
     }
 };
 
+// TODO: and condition to avoid getting myself
+const search = async (query: string, id: string): Promise<SearchPlayerResponse> => {
+    let { data: players, error } = await supabase
+        .from("player")
+        .select("id, username, full_name, avatar_url")
+        .like("username", `%${query}%`)
+        .neq("id", id);
+
+    if (error || players.length === 0) {
+        log.error(`No match for the query ${query}`);
+        return { code: 400, message: "player_not_found", data: null };
+    }
+
+    log.success(`Players found 📊 ${JSON.stringify(players)}`);
+    return { code: 200, message: "", data: players as unknown as Player[] };
+};
+
 export const PlayerRepository: PlayerRepositoryI = {
     completeProfile,
     getProfile,
     find,
+    search,
 };
