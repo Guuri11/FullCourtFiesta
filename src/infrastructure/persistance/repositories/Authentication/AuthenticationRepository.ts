@@ -23,6 +23,7 @@ const signIn = async (request: SignInRequest): Promise<SignInResponse> => {
     }
 
     if (!session) {
+        log.error(`Could not register user => ${JSON.stringify(error)}`);
         return { code: 201, message: "Por favor, confirma el registro en tu email", data: session };
     } else {
         log.success("The user has signed in successfully 👏");
@@ -40,10 +41,12 @@ const signUp = async (request: SignUpRequest): Promise<SignUpResponse> => {
     });
 
     if (error) {
+        log.error(`Could not register user => ${JSON.stringify(error)}`);
         return { code: error.status, message: error.message, data: null };
     }
 
     if (!session) {
+        log.info("Email verification sent");
         return { code: 201, message: "Por favor, confirma el registro en tu email", data: session };
     } else {
         log.success("The user has signed up successfully 👏");

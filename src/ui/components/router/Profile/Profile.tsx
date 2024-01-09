@@ -29,6 +29,7 @@ const Profile = observer(() => {
         getPosts();
     }, []);
 
+    // TODO: get my own posts, no from other ones
     useFocusEffect(
         useCallback(() => {
             const getProfile = async () => {
