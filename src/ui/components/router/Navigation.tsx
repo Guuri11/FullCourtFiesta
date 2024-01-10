@@ -56,6 +56,15 @@ const MainNavigation = () => {
                     headerShown: false,
                     tabBarShowLabel: false,
                 }}
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        e.preventDefault();
+
+                        navigation.navigate("SearchStack", {
+                            screen: "Search",
+                        });
+                    },
+                })}
             />
             <Tab.Screen
                 name='CommunityStack'
@@ -64,6 +73,15 @@ const MainNavigation = () => {
                     headerShown: false,
                     tabBarShowLabel: false,
                 }}
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        e.preventDefault();
+
+                        navigation.navigate("CommunityStack", {
+                            screen: "Community",
+                        });
+                    },
+                })}
             />
             <Tab.Screen
                 name='ProfileStack'

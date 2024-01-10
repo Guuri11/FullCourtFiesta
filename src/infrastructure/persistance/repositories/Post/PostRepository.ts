@@ -11,7 +11,7 @@ const create = async (request: PostCreateRq): Promise<PostRs> => {
 
     if (error) {
         log.error(error.message);
-        console.log(JSON.stringify(error));
+        log.error(error.hint);
 
         return { code: error.code, message: error.message, data: null };
     }
@@ -29,6 +29,8 @@ const update = async (request: Post): Promise<PostRs> => {
 
     if (error) {
         log.error(error.message);
+        log.error(error.hint);
+
         return { code: error.code, message: error.message, data: null };
     }
 
@@ -40,6 +42,8 @@ const remove = async (id: number): Promise<PostRs> => {
     const { error } = await supabase.from("post").delete().eq("id", id);
     if (error) {
         log.error(error.message);
+        log.error(error.hint);
+
         return { code: error.code, message: error.message, data: null };
     }
     log.success("User could remove post");
@@ -58,9 +62,25 @@ const find = async (): Promise<Post[]> => {
     return posts as unknown as Post[];
 };
 
+const findById = async (playerId: string): Promise<Post[]> => {
+    let { data: posts, error } = await supabase
+        .from("post")
+        .select("id, content, photo, event_id, created_at, player(username, avatar_url, id)")
+        .eq("player_id", playerId);
+    if (error) {
+        log.error(error.message);
+        log.error(error.hint);
+
+        return [];
+    }
+    log.info(`User fetching posts 📷 => ${JSON.stringify(posts)}`);
+    return posts as unknown as Post[];
+};
+
 export const PostRepository: PostRepositoryI = {
     create,
     update,
     remove,
     find,
+    findById,
 };

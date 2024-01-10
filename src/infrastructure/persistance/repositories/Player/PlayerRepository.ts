@@ -96,7 +96,6 @@ const find = async (id: string, columns: string[]): Promise<FindPlayerResponse> 
     }
 };
 
-// TODO: and condition to avoid getting myself
 const search = async (query: string, id: string): Promise<SearchPlayerResponse> => {
     let { data: players, error } = await supabase
         .from("player")

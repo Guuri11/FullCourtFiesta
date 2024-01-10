@@ -6,6 +6,11 @@ export type Friendship = {
     follower: Player;
 };
 
+export type FriendshipRq = {
+    player: string;
+    follower: string;
+};
+
 export type FriendshipRs = {
     code: number;
     message: string;

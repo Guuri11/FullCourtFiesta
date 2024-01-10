@@ -1,8 +1,8 @@
-import { FriendshipRs } from "./Friendship";
+import { Friendship, FriendshipRq, FriendshipRs } from "./Friendship";
 
-export interface FriendshipRepository {
-    create: () => Promise<FriendshipRs>;
-    update: (id: number) => Promise<FriendshipRs>;
-    delete: (id: number) => Promise<null>;
-    find: () => Promise<FriendshipRs[]>;
+export interface FriendshipRepositoryI {
+    create: (request: FriendshipRq) => Promise<FriendshipRs>;
+    remove: (id: number) => Promise<FriendshipRs>;
+    findByPlayerId: (playerId: string, asAFollower: boolean) => Promise<Friendship[]>;
+    findByPlayerIdAndFollowerId: (playerId: string, followerId: string) => Promise<boolean>;
 }

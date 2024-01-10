@@ -5,4 +5,5 @@ export interface PostRepositoryI {
     update: (post: Partial<Post>) => Promise<PostRs>;
     remove: (id: number) => Promise<PostRs>;
     find: () => Promise<Post[]>;
+    findById: (playerId: string) => Promise<Post[]>;
 }

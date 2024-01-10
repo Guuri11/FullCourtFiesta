@@ -4,14 +4,25 @@ import { Button, Icon, Image, Text, makeStyles } from "@rneui/themed";
 import { Post } from "../../../../domain/Post/Post";
 import { getAvatarName } from "../../../../utils";
 import { Avatar } from "@rneui/base";
+import { useNavigation } from "@react-navigation/native";
+import { useAuthenticationStore } from "../../../hooks/store";
 
 type PostPublicationType = {
     post: Post;
 };
 // TODO: handle event dialog
-// TODO: handle go to user profile when clicking on avatar
 export const PostPublication = ({ post }: PostPublicationType) => {
     const styles = useStyles();
+    const navigation = useNavigation();
+    const authenticationStore = useAuthenticationStore();
+
+    const handleGoToPlayerProfile = () => {
+        if (authenticationStore.session.user.id === post.player.id) {
+            return;
+        }
+        //@ts-ignore
+        navigation.navigate("PlayerProfile", { playerId: post.player.id });
+    };
 
     return (
         <View style={styles.postContainer}>
@@ -21,9 +32,12 @@ export const PostPublication = ({ post }: PostPublicationType) => {
                 size={48}
                 source={post.player.avatar_url && { uri: post.player.avatar_url }}
                 containerStyle={styles.avatar}
+                onPress={handleGoToPlayerProfile}
             />
             <View style={{ flex: 1 }}>
-                <Text style={styles.username}>{post.player.username}</Text>
+                <Text style={styles.username} onPress={handleGoToPlayerProfile}>
+                    {post.player.username}
+                </Text>
                 <Text>{post.content}</Text>
                 {post.photo && <Image style={styles.postImage} source={{ uri: post.photo }} />}
                 <View style={styles.actionsContainer}>

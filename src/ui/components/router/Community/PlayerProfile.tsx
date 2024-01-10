@@ -7,59 +7,67 @@ import { PlayerRepositoryI } from "../../../../domain/Player/PlayerRepository";
 import "../../../../infrastructure/locales/index";
 import { useAppStore, useAuthenticationStore, useUIStore } from "../../../hooks/store";
 import { observer } from "mobx-react-lite";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { getAvatarName } from "../../../../utils";
 import { Post } from "../../../../domain/Post/Post";
 import { PostServiceType } from "../../../../application/PostService";
 import { PostRepositoryI } from "../../../../domain/Post/PostRepository";
-import CreatePostFAB from "../../design/common/CreatePostFAB";
-import { PostPublication } from "../Community/PostPublication";
 import { HeaderImage } from "../../design/common/HeaderImage";
+import { Player } from "../../../../domain/Player/Player";
+import { RouteProp } from "@react-navigation/native";
+import { PostPublication } from "./PostPublication";
 import { FriendshipServiceType } from "../../../../application/FriendshipService";
 import { FriendshipRepositoryI } from "../../../../domain/Friendship/FriendshipRepository";
 import { Friendship } from "../../../../domain/Friendship/Friendship";
 
-const Profile = observer(() => {
-    const authenticationStore = useAuthenticationStore();
+type PlayerProfileProps = {
+    route: RouteProp<{ params: { playerId: string } }, "params">;
+};
+
+const PlayerProfile = observer(({ route }: PlayerProfileProps) => {
+    const { playerId } = route.params;
+    const [player, setPlayer] = useState<Player>(null);
     const appStore = useAppStore();
     const uiStore = useUIStore();
     const styles = useStyles();
     const { t } = useTranslation();
-    const navigation = useNavigation();
     const [posts, setPosts] = useState<Post[]>([]);
+    const authenticationStore = useAuthenticationStore();
+    const [following, setFollowing] = useState<Boolean>(false);
     const [followers, setFollowers] = useState<Friendship[]>([]);
-    const [following, setFollowing] = useState<Friendship[]>([]);
+    const [followings, setFollowings] = useState<Friendship[]>([]);
+
+    useEffect(() => {
+        getProfile();
+    }, [playerId]);
 
     useEffect(() => {
         getPosts();
-    }, []);
+    }, [playerId]);
 
     useEffect(() => {
         getFriendships();
-    }, []);
+    }, [playerId]);
 
-    useFocusEffect(
-        useCallback(() => {
-            const getProfile = async () => {
-                const { service, repository } = appStore.getService("player") as {
-                    service: PlayerServiceType;
-                    repository: PlayerRepositoryI;
-                };
+    useEffect(() => {
+        isFollowing();
+    }, [playerId]);
 
-                service
-                    .getProfile(repository, authenticationStore.session)
-                    .then(({ code, message, data }) => {
-                        if (code !== 200) {
-                            uiStore.notification.addNotification(t(message));
-                        } else {
-                            authenticationStore.setUser(data);
-                        }
-                    });
-            };
+    const getProfile = async () => {
+        const { service, repository } = appStore.getService("player") as {
+            service: PlayerServiceType;
+            repository: PlayerRepositoryI;
+        };
 
-            if (authenticationStore.session) getProfile();
-        }, [authenticationStore.session]),
-    );
+        service
+            .find(repository, playerId, ["username", "position", "bio", "avatar_url", "full_name"])
+            .then(({ code, message, data }) => {
+                if (code !== 200) {
+                    uiStore.notification.addNotification(t(message));
+                } else {
+                    setPlayer(data);
+                }
+            });
+    };
 
     const getPosts = useCallback(() => {
         const { service, repository } = appStore.getService("post") as {
@@ -67,7 +75,7 @@ const Profile = observer(() => {
             repository: PostRepositoryI;
         };
 
-        service.findById(repository, authenticationStore.session.user.id).then((data) => {
+        service.findById(repository, playerId).then((data) => {
             setPosts(data);
         });
     }, []);
@@ -78,58 +86,75 @@ const Profile = observer(() => {
             repository: FriendshipRepositoryI;
         };
 
-        service
-            .findByPlayerId(repository, authenticationStore.session.user.id, false)
-            .then((data) => {
-                setFollowing(data);
-            });
-        service
-            .findByPlayerId(repository, authenticationStore.session.user.id, true)
-            .then((data) => {
-                setFollowers(data);
-            });
+        service.findByPlayerId(repository, playerId, false).then((data) => {
+            setFollowings(data);
+        });
+        service.findByPlayerId(repository, playerId, true).then((data) => {
+            setFollowers(data);
+        });
     }, []);
 
-    const handleEdit = () => {
-        //@ts-ignore
-        navigation.navigate("ProfileEdit");
+    const handleFollow = () => {
+        const { service, repository } = appStore.getService("friendship") as {
+            service: FriendshipServiceType;
+            repository: FriendshipRepositoryI;
+        };
+
+        service
+            .create(repository, { player: playerId, follower: authenticationStore.session.user.id })
+            .then(({ code, message }) => {
+                if (code !== 200) {
+                    uiStore.notification.addNotification(message, "error");
+                } else {
+                    setFollowing(true);
+                }
+            });
     };
+
+    const isFollowing = useCallback(() => {
+        const { service, repository } = appStore.getService("friendship") as {
+            service: FriendshipServiceType;
+            repository: FriendshipRepositoryI;
+        };
+
+        service
+            .findByPlayerIdAndFollowerId(repository, playerId, authenticationStore.session.user.id)
+            .then((result) => setFollowing(result));
+    }, []);
 
     return (
         <View style={{ height: "100%" }}>
-            <HeaderImage avatarUrl={authenticationStore.user?.avatar_url} />
+            <HeaderImage avatarUrl={player?.avatar_url} />
             <View style={styles.container}>
                 <View style={styles.usernameContainer}>
                     <Avatar
                         rounded
-                        title={getAvatarName(authenticationStore.user?.username || "")}
+                        title={getAvatarName(player?.username || "")}
                         size={120}
                         source={
-                            authenticationStore.user?.avatar_url && {
-                                uri: authenticationStore.user?.avatar_url,
+                            player?.avatar_url && {
+                                uri: player?.avatar_url,
                             }
                         }
                         containerStyle={styles.avatarContainer}
                     />
                     <View style={styles.userDataAndEditContainer}>
                         <View style={styles.userDataContainer}>
-                            <Text h4>{authenticationStore?.user?.full_name}</Text>
-                            <Text style={styles.username}>
-                                {authenticationStore?.user?.username}
-                            </Text>
+                            <Text h4>{player?.full_name}</Text>
+                            <Text style={styles.username}>{player?.username}</Text>
                         </View>
-                        <Button onPress={handleEdit}>{t("edit")}</Button>
+                        <Button onPress={handleFollow}>
+                            {t(following ? "following" : "follow")}
+                        </Button>
                     </View>
                 </View>
                 <View style={styles.bioContainer}>
-                    <Text style={styles.position}>
-                        {t(authenticationStore?.user?.position.toLowerCase())}
-                    </Text>
-                    <Text>{authenticationStore?.user?.bio}</Text>
+                    <Text style={styles.position}>{t(player?.position.toLowerCase())}</Text>
+                    <Text>{player?.bio}</Text>
                 </View>
                 <View style={styles.followingContainer}>
                     <Text>{`${followers.length} ${t("followers")}`}</Text>
-                    <Text>{`${following.length} ${t("following")}`}</Text>
+                    <Text>{`${followings.length} ${t("following")}`}</Text>
                 </View>
             </View>
             <Divider />
@@ -147,12 +172,11 @@ const Profile = observer(() => {
                     // You may integrate other libraries like 'react-native-fast-image' for better image performance
                 />
             </View>
-            <CreatePostFAB />
         </View>
     );
 });
 
-export default Profile;
+export default PlayerProfile;
 
 const useStyles = makeStyles((theme) => ({
     avatarImage: {

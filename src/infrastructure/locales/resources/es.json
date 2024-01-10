@@ -41,5 +41,8 @@
     "search_here": "Buscar",
     "courts": "Canchas de baloncesto",
     "players": "Jugadores",
-    "player_not_found": "No se ha encontrado ningún jugador"
+    "player_not_found": "No se ha encontrado ningún jugador",
+    "follow": "Seguir",
+    "followers": "Seguidores",
+    "following": "Siguiendo"
 }
