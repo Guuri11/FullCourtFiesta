@@ -21,8 +21,12 @@ const create = async (request: FriendshipRq): Promise<FriendshipRs> => {
     return { code: 200, message: "", data: data[0] as Friendship };
 };
 
-const remove = async (id: number): Promise<FriendshipRs> => {
-    const { error } = await supabase.from("friendship").delete().eq("id", id);
+const remove = async (playerId: string, followerId: string): Promise<FriendshipRs> => {
+    const { error } = await supabase
+        .from("friendship")
+        .delete()
+        .eq("player_id", playerId)
+        .eq("follower_id", followerId);
     if (error) {
         log.error(error.message);
         log.error(error.hint);
@@ -36,7 +40,7 @@ const findByPlayerId = async (playerId: string, asAFollower: boolean): Promise<F
     let { data: posts, error } = await supabase
         .from("friendship")
         .select(
-            `id, ${
+            `${
                 asAFollower
                     ? "player!friendship_follower_id_fkey"
                     : "player!friendship_player_id_fkey"
@@ -59,16 +63,16 @@ const findByPlayerIdAndFollowerId = async (
     let { count, error } = await supabase
         .from("friendship")
         .select("*", { count: "exact", head: true })
-        .eq("followerId", followerId)
+        .eq("follower_id", followerId)
         .eq("player_id", playerId);
 
-    if (error && count === 0) {
-        log.error(error.message);
+    if (error) {
+        log.error(error.message || "Not following");
         log.error(error.hint);
         return false;
     }
     log.info(`User is following 👥 => ${JSON.stringify(count)}`);
-    return true;
+    return count;
 };
 
 export const FriendshipRepository: FriendshipRepositoryI = {

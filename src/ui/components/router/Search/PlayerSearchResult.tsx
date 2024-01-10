@@ -53,6 +53,31 @@ export const PlayerSearchResult = ({ player }: PlayerPropsType) => {
             });
     };
 
+    const handleUnFollow = () => {
+        const { service, repository } = appStore.getService("friendship") as {
+            service: FriendshipServiceType;
+            repository: FriendshipRepositoryI;
+        };
+
+        service
+            .remove(repository, player.id, authenticationStore.session.user.id)
+            .then(({ code, message }) => {
+                if (code !== 200) {
+                    uiStore.notification.addNotification(message, "error");
+                } else {
+                    setFollowing(false);
+                }
+            });
+    };
+
+    const handleFollowButton = () => {
+        if (following) {
+            handleUnFollow();
+        } else {
+            handleFollow();
+        }
+    };
+
     const isFollowing = useCallback(() => {
         const { service, repository } = appStore.getService("friendship") as {
             service: FriendshipServiceType;
@@ -84,8 +109,7 @@ export const PlayerSearchResult = ({ player }: PlayerPropsType) => {
                 radius={"lg"}
                 size='md'
                 type={`${following ? "solid" : "outline"}`}
-                onPress={handleFollow}
-                disabled={following}
+                onPress={handleFollowButton}
             >
                 <Icon
                     name={`${following ? "person-remove-outline" : "person-add-outline"}`}

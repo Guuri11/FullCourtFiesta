@@ -44,5 +44,6 @@
     "player_not_found": "Player not found",
     "follow": "Follow",
     "followers": "Followers",
-    "following": "Following"
+    "following": "Following",
+    "unfollow": "Unfollow"
 }

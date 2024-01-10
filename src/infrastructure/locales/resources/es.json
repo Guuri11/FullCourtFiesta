@@ -44,5 +44,6 @@
     "player_not_found": "No se ha encontrado ningún jugador",
     "follow": "Seguir",
     "followers": "Seguidores",
-    "following": "Siguiendo"
+    "following": "Siguiendo",
+    "unfollow": "Dejar de seguir"
 }

@@ -1,7 +1,6 @@
 import { Player } from "../Player/Player";
 
 export type Friendship = {
-    id: number;
     player: Player;
     follower: Player;
 };

@@ -111,6 +111,23 @@ const PlayerProfile = observer(({ route }: PlayerProfileProps) => {
             });
     };
 
+    const handleUnFollow = () => {
+        const { service, repository } = appStore.getService("friendship") as {
+            service: FriendshipServiceType;
+            repository: FriendshipRepositoryI;
+        };
+
+        service
+            .remove(repository, playerId, authenticationStore.session.user.id)
+            .then(({ code, message }) => {
+                if (code !== 200) {
+                    uiStore.notification.addNotification(message, "error");
+                } else {
+                    setFollowing(false);
+                }
+            });
+    };
+
     const isFollowing = useCallback(() => {
         const { service, repository } = appStore.getService("friendship") as {
             service: FriendshipServiceType;
@@ -121,6 +138,14 @@ const PlayerProfile = observer(({ route }: PlayerProfileProps) => {
             .findByPlayerIdAndFollowerId(repository, playerId, authenticationStore.session.user.id)
             .then((result) => setFollowing(result));
     }, []);
+
+    const handleFollowButton = () => {
+        if (following) {
+            handleUnFollow();
+        } else {
+            handleFollow();
+        }
+    };
 
     return (
         <View style={{ height: "100%" }}>
@@ -143,7 +168,7 @@ const PlayerProfile = observer(({ route }: PlayerProfileProps) => {
                             <Text h4>{player?.full_name}</Text>
                             <Text style={styles.username}>{player?.username}</Text>
                         </View>
-                        <Button onPress={handleFollow}>
+                        <Button onPress={handleFollowButton}>
                             {t(following ? "following" : "follow")}
                         </Button>
                     </View>
