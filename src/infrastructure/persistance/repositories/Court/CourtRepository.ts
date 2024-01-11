@@ -13,9 +13,7 @@ const find = async (latitude: number, longitude: number, radio: number): Promise
           way["leisure"="pitch"]["sport"="basketball"](around:${radio},${latitude},${longitude});
           relation["leisure"="pitch"]["sport"="basketball"](around:${radio},${latitude},${longitude});
         );
-        out body;
-        >;
-        out skel qt;
+        out center;
       `;
 
         const encodedQuery = encodeURIComponent(query);
@@ -32,12 +30,11 @@ const find = async (latitude: number, longitude: number, radio: number): Promise
         // TODO: create type for overpass api response
         data.elements.forEach((element) => {
             if (element.type === "way") {
-                const p = data.elements.find((e) => e.type === "node" && e.id === element.nodes[0]);
                 courts.push({
-                    name: p.tags?.name,
-                    id: p.id,
-                    latitude: p.lat,
-                    longitude: p.lon,
+                    name: element.tags?.name,
+                    id: element.id,
+                    latitude: element.center.lat,
+                    longitude: element.center.lon,
                     playersNear: 0,
                     direction: "",
                 });
