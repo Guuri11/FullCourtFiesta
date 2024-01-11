@@ -3,14 +3,23 @@ import React, { useCallback, useEffect, useState } from "react";
 import * as Location from "expo-location";
 import MapView, { MapMarker } from "react-native-maps";
 import RequestLocation from "../../design/common/RequestLocation";
-import { useLocationStore } from "../../../hooks/store";
+import { useAppStore, useLocationStore, useUIStore } from "../../../hooks/store";
 import { observer } from "mobx-react-lite";
 import { log } from "../../../../infrastructure/config/logger";
+import { CourtServiceType } from "../../../../application/CourtService";
+import { CourtRepositoryI } from "../../../../domain/Court/CourtRepository";
+import "../../../../infrastructure/locales/index";
+import { useTranslation } from "react-i18next";
+import { Court } from "../../../../domain/Court/Court";
 
 const Home = observer(() => {
+    const { t } = useTranslation();
     const [showRequestLocationModal, setShowRequestLocationModal] = useState(false);
     const locationStore = useLocationStore();
-    const [courts, setCourts] = useState([]);
+    const [courts, setCourts] = useState<Court[]>([]);
+    const appStore = useAppStore();
+    const uiStore = useUIStore();
+
     const handleLocationChange = useCallback(
         (location: Location.LocationObject) => {
             locationStore.setLocation(location);
@@ -18,61 +27,19 @@ const Home = observer(() => {
         [locationStore],
     );
 
-    /**
-     * Obtiene las pistas de baloncesto cercanas dadas unas coordenadas y un radio.
-     * @param {number} latitud La latitud del centro de la búsqueda.
-     * @param {number} longitud La longitud del centro de la búsqueda.
-     * @param {number} radio El radio de búsqueda en metros.
-     * @returns {Promise} Una promesa que se resuelve con las pistas de baloncesto.
-     */
-    const getBasketballCourts = async (latitud, longitud, radio) => {
-        try {
-            const overpassUrl = "https://overpass-api.de/api/interpreter";
+    const getBasketballCourts = async (latitude: number, longitude: number, radio: number) => {
+        const { service, repository } = appStore.getService("court") as {
+            service: CourtServiceType;
+            repository: CourtRepositoryI;
+        };
 
-            // Construye la consulta Overpass para buscar pistas de baloncesto
-            const query = `
-        [out:json];
-        (
-          node["leisure"="pitch"]["sport"="basketball"](around:${radio},${latitud},${longitud});
-          way["leisure"="pitch"]["sport"="basketball"](around:${radio},${latitud},${longitud});
-          relation["leisure"="pitch"]["sport"="basketball"](around:${radio},${latitud},${longitud});
-        );
-        out body;
-        >;
-        out skel qt;
-      `;
-
-            // Codifica la consulta para incluirla en la URL
-            const encodedQuery = encodeURIComponent(query);
-
-            // Realiza la llamada a la API de Overpass
-            const response = await fetch(`${overpassUrl}?data=${encodedQuery}`);
-            if (!response.ok) {
-                throw new Error("Error al realizar la petición a la API de Overpass");
+        service.find(repository, latitude, longitude, radio).then(({ code, message, data }) => {
+            if (code !== 200) {
+                uiStore.notification.addNotification(t(message), "error");
+            } else {
+                setCourts(data);
             }
-
-            const data = await response.json();
-
-            // Procesa la respuesta y extrae las pistas de baloncesto
-            let pistas = [];
-            data.elements.forEach((element) => {
-                if (element.type === "way") {
-                    const p = data.elements.find((e) => e.id == element.nodes[0]);
-                    pistas.push({
-                        id: p.id,
-                        lat: p.lat,
-                        lon: p.lon,
-                    });
-                }
-            });
-
-            setCourts(pistas);
-
-            return pistas;
-        } catch (error) {
-            console.error("Error obteniendo pistas de baloncesto cercanas:", error);
-            throw error;
-        }
+        });
     };
 
     useEffect(() => {
@@ -132,7 +99,10 @@ const Home = observer(() => {
                             return (
                                 <MapMarker
                                     key={court.id}
-                                    coordinate={{ latitude: court.lat, longitude: court.lon }}
+                                    coordinate={{
+                                        latitude: court.latitude,
+                                        longitude: court.longitude,
+                                    }}
                                 />
                             );
                         })}

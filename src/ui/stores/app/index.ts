@@ -21,6 +21,9 @@ import { PostRepositoryI } from "../../../domain/Post/PostRepository";
 import { FriendshipService, FriendshipServiceType } from "../../../application/FriendshipService";
 import { FriendshipRepository } from "../../../infrastructure/persistance/repositories/Friendship/FriendshipRepository";
 import { FriendshipRepositoryI } from "../../../domain/Friendship/FriendshipRepository";
+import { CourtService, CourtServiceType } from "../../../application/CourtService";
+import { CourtRepositoryI } from "../../../domain/Court/CourtRepository";
+import { CourtRepository } from "../../../infrastructure/persistance/repositories/Court/CourtRepository";
 
 type ServicesDIType = {
     name: types.ServiceNameType;
@@ -28,12 +31,14 @@ type ServicesDIType = {
         | AuthenticationServiceType
         | PlayerServiceType
         | PostServiceType
-        | FriendshipServiceType;
+        | FriendshipServiceType
+        | CourtServiceType;
     repository:
         | AuthenticationRepositoryI
         | PlayerRepositoryI
         | PostRepositoryI
-        | FriendshipRepositoryI;
+        | FriendshipRepositoryI
+        | CourtRepositoryI;
 };
 
 class AppStore implements Resetable {
@@ -68,6 +73,11 @@ class AppStore implements Resetable {
                 name: "friendship",
                 service: FriendshipService,
                 repository: FriendshipRepository,
+            },
+            {
+                name: "court",
+                service: CourtService,
+                repository: CourtRepository,
             },
         ];
     }
