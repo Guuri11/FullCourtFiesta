@@ -1,4 +1,4 @@
-import { Avatar, Button, Divider, Text, makeStyles } from "@rneui/themed";
+import { Avatar, BottomSheet, Button, Divider, Text, makeStyles } from "@rneui/themed";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, View } from "react-native";
@@ -29,6 +29,7 @@ const Profile = observer(() => {
     const [posts, setPosts] = useState<Post[]>([]);
     const [followers, setFollowers] = useState<Friendship[]>([]);
     const [following, setFollowing] = useState<Friendship[]>([]);
+    const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
     useEffect(() => {
         getPosts();
@@ -95,6 +96,30 @@ const Profile = observer(() => {
         navigation.navigate("ProfileEdit");
     };
 
+    const openBottomSheet = (post: Post) => {
+        setSelectedPost(post);
+    };
+
+    const closeBottomSheet = () => {
+        setSelectedPost(null);
+    };
+
+    const removePost = () => {
+        const { service, repository } = appStore.getService("post") as {
+            service: PostServiceType;
+            repository: PostRepositoryI;
+        };
+
+        service.remove(repository, selectedPost.id).then(({ code, message, data }) => {
+            if (code !== 200) {
+                uiStore.notification.addNotification(message, "error");
+            } else {
+                setPosts(posts.filter((p) => p.id !== selectedPost.id));
+            }
+            closeBottomSheet();
+        });
+    };
+
     return (
         <View style={{ height: "100%" }}>
             <HeaderImage avatarUrl={authenticationStore.user?.avatar_url} />
@@ -136,7 +161,9 @@ const Profile = observer(() => {
             <View>
                 <FlatList
                     data={posts}
-                    renderItem={({ item }) => <PostPublication post={item} />}
+                    renderItem={({ item }) => (
+                        <PostPublication openBottomSheet={openBottomSheet} post={item} />
+                    )}
                     keyExtractor={(item) => String(item.id)}
                     // Performance settings
                     initialNumToRender={10} // Adjust based on your needs
@@ -147,6 +174,19 @@ const Profile = observer(() => {
                     // You may integrate other libraries like 'react-native-fast-image' for better image performance
                 />
             </View>
+            <BottomSheet isVisible={selectedPost !== null}>
+                <Button
+                    title='Remove Post'
+                    buttonStyle={styles.bottomSheetButtonDanger}
+                    onPress={removePost}
+                />
+                <Button
+                    title='Cancel'
+                    buttonStyle={styles.bottomSheetButton}
+                    onPress={closeBottomSheet}
+                />
+            </BottomSheet>
+
             <CreatePostFAB />
         </View>
     );
@@ -201,5 +241,14 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "space-between",
         alignItems: "center",
         width: "66%",
+    },
+    bottomSheetButton: {
+        height: 70,
+        marginVertical: 0,
+    },
+    bottomSheetButtonDanger: {
+        height: 70,
+        marginVertical: 0,
+        backgroundColor: theme.colors.secondary,
     },
 }));

@@ -25,7 +25,7 @@
     "expo": "~49.0.15",
     "expo-dev-client": "~2.2.1",
     "expo-document-picker": "~11.2.2",
-    "expo-file-system": "~15.2.2",
+    "expo-file-system": "~15.4.5",
     "expo-location": "~15.1.1",
     "expo-status-bar": "~1.6.0",
     "i18next": "^23.7.12",
@@ -40,14 +40,16 @@
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-logs": "^5.0.1",
     "react-native-maps": "^1.8.4",
-    "react-native-safe-area-context": "4.5.0",
     "react-native-screens": "~3.20.0",
     "react-native-svg": "^13.10.0",
     "react-native-toast-message": "^2.1.6",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-use-websocket": "^0.2.6",
     "react-native-vector-icons": "^9.2.0",
-    "react-native-websocket": "^1.0.2"
+    "react-native-websocket": "^1.0.2",
+    "react-native-safe-area-context": "4.6.3",
+    "expo-sqlite": "~11.3.3",
+    "expo-asset": "~8.10.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -46,5 +46,6 @@
   "followers": "Seguidores",
   "following": "Siguiendo",
   "unfollow": "Dejar de seguir",
-  "unable_to_find_courts": "No ha sido posible obtener las canchas, inténtalo más tarde"
+  "unable_to_find_courts": "No ha sido posible obtener las canchas, inténtalo más tarde",
+  "unable_to_create_court": "No se pudo crear la pista de baloncesto, inténtalo más tarde"
 }

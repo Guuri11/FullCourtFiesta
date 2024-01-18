@@ -5,6 +5,7 @@ import { getData } from "../../hooks/useAsyncStorage";
 import { useAuthenticationStore, useAuthorizationStore } from "../../hooks/store";
 import { supabase } from "../../../infrastructure/persistance/supabase";
 import { log } from "../../../infrastructure/config/logger";
+import { DatabaseConnection } from "../../../infrastructure/config/db-connection";
 
 const Security = () => {
     const authorizationStore = useAuthorizationStore();
@@ -37,6 +38,29 @@ const Security = () => {
         handleSession();
         setLoading(false);
     }, [authorizationStore.showOnboarding]);
+
+    useEffect(() => {
+        if (!authenticationStore.session?.user) {
+            return;
+        }
+        const db = DatabaseConnection.getConnection();
+
+        db.transaction(function (txn) {
+            txn.executeSql(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='court'",
+                [],
+                function (_tx, res) {
+                    if (res.rows.length == 0) {
+                        txn.executeSql("DROP TABLE IF EXISTS court", []);
+                        txn.executeSql(
+                            "CREATE TABLE IF NOT EXISTS court(id INTEGER PRIMARY KEY, name TEXT, direction TEXT, latitude REAL, longitude REAL, players_near INTEGER)",
+                            [],
+                        );
+                    }
+                },
+            );
+        });
+    }, [authenticationStore.session]);
 
     if (loading) {
         return <LoadingPage />;

@@ -1,6 +1,7 @@
 import { Post, PostCreateRq, PostRs } from "../domain/Post/Post";
 import { PostRepositoryI } from "../domain/Post/PostRepository";
 
+// TODO: use update
 export type PostServiceType = {
     create: (repository: PostRepositoryI, request: PostCreateRq) => Promise<PostRs>;
     remove: (repository: PostRepositoryI, id: number) => Promise<PostRs>;

@@ -12,3 +12,9 @@ export type CourtRs = {
     message: string;
     data: Court[];
 };
+
+export type CourtCreateRs = {
+    code: number;
+    message: string;
+    data: Court;
+};

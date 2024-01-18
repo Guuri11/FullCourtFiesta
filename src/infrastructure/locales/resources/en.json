@@ -46,5 +46,6 @@
   "followers": "Followers",
   "following": "Following",
   "unfollow": "Unfollow",
-  "unable_to_find_courts": "Unable to find courts, try later"
+  "unable_to_find_courts": "Unable to find courts, try later",
+  "unable_to_create_court": "Unable to create court, try later"
 }

@@ -42,15 +42,6 @@ class AuthenticationStore implements Resetable {
         this.isAuthenticated = !!session;
         this.session = session;
     }
-
-    @action signOut() {
-        const { service, repository } = this.appStore.getService("authentication") as {
-            service: AuthenticationServiceType;
-            repository: AuthenticationRepositoryI;
-        };
-        service.signOut(repository);
-        this.setSession(null);
-    }
 }
 
 export default AuthenticationStore;

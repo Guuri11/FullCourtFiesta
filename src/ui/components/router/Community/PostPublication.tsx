@@ -9,9 +9,10 @@ import { useAuthenticationStore } from "../../../hooks/store";
 
 type PostPublicationType = {
     post: Post;
+    openBottomSheet: (post: Post) => void;
 };
 // TODO: handle event dialog
-export const PostPublication = ({ post }: PostPublicationType) => {
+export const PostPublication = ({ post, openBottomSheet }: PostPublicationType) => {
     const styles = useStyles();
     const navigation = useNavigation();
     const authenticationStore = useAuthenticationStore();
@@ -54,6 +55,23 @@ export const PostPublication = ({ post }: PostPublicationType) => {
                             iconStyle={post.event ? styles.actionIcon : styles.actionIconDisabled}
                         />
                     </Button>
+                    {authenticationStore.session.user.id === post.player.id && (
+                        <Button
+                            containerStyle={styles.actionButton}
+                            radius={"sm"}
+                            size='sm'
+                            type='clear'
+                            onPress={() => openBottomSheet(post)}
+                        >
+                            <Icon
+                                name='ellipsis-horizontal-outline'
+                                type='ionicon'
+                                iconStyle={
+                                    post.event ? styles.actionIcon : styles.actionIconDisabled
+                                }
+                            />
+                        </Button>
+                    )}
                 </View>
             </View>
         </View>

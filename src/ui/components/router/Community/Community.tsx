@@ -6,11 +6,15 @@ import { PostRepositoryI } from "../../../../domain/Post/PostRepository";
 import { Post } from "../../../../domain/Post/Post";
 import CreatePostFAB from "../../design/common/CreatePostFAB";
 import { PostPublication } from "./PostPublication";
+import { BottomSheet, Button, makeStyles } from "@rneui/themed";
 
+// TODO: refactor bottom sheet
 // TODO: load data when created a new post by the user
 const Community = () => {
+    const styles = useStyles();
     const [posts, setPosts] = useState<Post[]>([]);
     const appStore = useAppStore();
+    const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     const getPosts = useCallback(() => {
         const { service, repository } = appStore.getService("post") as {
             service: PostServiceType;
@@ -22,6 +26,19 @@ const Community = () => {
         });
     }, []);
 
+    const openBottomSheet = (post: Post) => {
+        setSelectedPost(post);
+    };
+
+    const closeBottomSheet = () => {
+        setSelectedPost(null);
+    };
+
+    const removePost = () => {
+        // TODO: Implement post removal logic
+        closeBottomSheet();
+    };
+
     useEffect(() => {
         getPosts();
     }, []);
@@ -30,7 +47,9 @@ const Community = () => {
         <View style={{ height: "100%" }}>
             <FlatList
                 data={posts}
-                renderItem={({ item }) => <PostPublication post={item} />}
+                renderItem={({ item }) => (
+                    <PostPublication openBottomSheet={openBottomSheet} post={item} />
+                )}
                 keyExtractor={(item) => String(item.id)}
                 // Performance settings
                 initialNumToRender={10} // Adjust based on your needs
@@ -40,9 +59,34 @@ const Community = () => {
                 // Lazy loading images
                 // You may integrate other libraries like 'react-native-fast-image' for better image performance
             />
+            <BottomSheet isVisible={selectedPost !== null}>
+                <Button
+                    title='Remove Post'
+                    buttonStyle={styles.bottomSheetButtonDanger}
+                    onPress={removePost}
+                />
+                <Button
+                    title='Cancel'
+                    buttonStyle={styles.bottomSheetButton}
+                    onPress={closeBottomSheet}
+                />
+            </BottomSheet>
+
             <CreatePostFAB />
         </View>
     );
 };
+
+const useStyles = makeStyles((theme) => ({
+    bottomSheetButton: {
+        height: 70,
+        marginVertical: 0,
+    },
+    bottomSheetButtonDanger: {
+        height: 70,
+        marginVertical: 0,
+        backgroundColor: theme.colors.secondary,
+    },
+}));
 
 export default Community;

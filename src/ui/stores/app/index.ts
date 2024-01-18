@@ -24,6 +24,8 @@ import { FriendshipRepositoryI } from "../../../domain/Friendship/FriendshipRepo
 import { CourtService, CourtServiceType } from "../../../application/CourtService";
 import { CourtRepositoryI } from "../../../domain/Court/CourtRepository";
 import { CourtRepository } from "../../../infrastructure/persistance/repositories/Court/CourtRepository";
+import { CourtRepository as CourtRepositoryOpenStreetMap } from "../../../infrastructure/persistance/repositories/Court/CourtRepositoryOpenStreetMap";
+import { CourtRepository as CourtRepositoryLocal } from "../../../infrastructure/persistance/repositories/Court/CourtRepositoryLocal";
 
 type ServicesDIType = {
     name: types.ServiceNameType;
@@ -78,6 +80,16 @@ class AppStore implements Resetable {
                 name: "court",
                 service: CourtService,
                 repository: CourtRepository,
+            },
+            {
+                name: "court-open-street-map",
+                service: CourtService,
+                repository: CourtRepositoryOpenStreetMap,
+            },
+            {
+                name: "court-local",
+                service: CourtService,
+                repository: CourtRepositoryLocal,
             },
         ];
     }

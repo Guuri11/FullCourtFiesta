@@ -11,6 +11,7 @@ import { CourtRepositoryI } from "../../../../domain/Court/CourtRepository";
 import "../../../../infrastructure/locales/index";
 import { useTranslation } from "react-i18next";
 import { Court } from "../../../../domain/Court/Court";
+import { ServiceNameType } from "../../../../application/types";
 
 const Home = observer(() => {
     const { t } = useTranslation();
@@ -19,6 +20,7 @@ const Home = observer(() => {
     const [courts, setCourts] = useState<Court[]>([]);
     const appStore = useAppStore();
     const uiStore = useUIStore();
+    const [searchLocally, setSearchLocally] = useState(true);
 
     const handleLocationChange = useCallback(
         (location: Location.LocationObject) => {
@@ -27,20 +29,56 @@ const Home = observer(() => {
         [locationStore],
     );
 
-    const getBasketballCourts = async (latitude: number, longitude: number, radio: number) => {
-        const { service, repository } = appStore.getService("court") as {
-            service: CourtServiceType;
-            repository: CourtRepositoryI;
-        };
+    const getBasketballCourts = useCallback(
+        async (
+            latitude: number,
+            longitude: number,
+            radio: number,
+            serviceName: ServiceNameType,
+            storeLocally: boolean,
+        ) => {
+            const { service, repository } = appStore.getService(serviceName) as {
+                service: CourtServiceType;
+                repository: CourtRepositoryI;
+            };
 
-        service.find(repository, latitude, longitude, radio).then(({ code, message, data }) => {
-            if (code !== 200) {
-                uiStore.notification.addNotification(t(message), "error");
-            } else {
-                setCourts(data);
+            try {
+                const { code, message, data } = await service.find(
+                    repository,
+                    latitude,
+                    longitude,
+                    radio,
+                );
+
+                if (code !== 200) {
+                    uiStore.notification.addNotification(t(message), "error");
+                } else {
+                    setCourts(data);
+                    if (searchLocally && data.length === 0) setSearchLocally(false);
+
+                    if (storeLocally) storeCourtLocal(data);
+                }
+            } catch (error) {
+                log.error("Error fetching basketball courts:", error);
+                uiStore.notification.addNotification("Error fetching basketball courts", "error");
             }
-        });
-    };
+        },
+        [appStore, searchLocally],
+    );
+
+    const storeCourtLocal = useCallback(
+        async (courts: Court[]) => {
+            const { service, repository } = appStore.getService("court-local") as {
+                service: CourtServiceType;
+                repository: CourtRepositoryI;
+            };
+
+            courts.forEach((court) => {
+                service.create(repository, court);
+            });
+        },
+        [appStore],
+    );
 
     useEffect(() => {
         if (locationStore.location?.coords) {
@@ -48,9 +86,11 @@ const Home = observer(() => {
                 locationStore.location.coords.latitude,
                 locationStore.location.coords.longitude,
                 3500,
+                searchLocally ? "court-local" : "court",
+                !searchLocally,
             );
         }
-    }, [locationStore.location]);
+    }, [locationStore.location, searchLocally, getBasketballCourts]);
 
     useEffect(() => {
         Location.getForegroundPermissionsAsync().then((permissionResponse) => {
@@ -99,6 +139,7 @@ const Home = observer(() => {
                             return (
                                 <MapMarker
                                     key={court.id}
+                                    title={court.name}
                                     coordinate={{
                                         latitude: court.latitude,
                                         longitude: court.longitude,
