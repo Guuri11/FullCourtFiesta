@@ -1,4 +1,4 @@
-import { Avatar, Button, Divider, Text, makeStyles } from "@rneui/themed";
+import { Avatar, Button, Divider, Icon, Text, makeStyles, useTheme } from "@rneui/themed";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, View } from "react-native";
@@ -13,7 +13,7 @@ import { PostServiceType } from "../../../../application/PostService";
 import { PostRepositoryI } from "../../../../domain/Post/PostRepository";
 import { HeaderImage } from "../../design/common/HeaderImage";
 import { Player } from "../../../../domain/Player/Player";
-import { RouteProp } from "@react-navigation/native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
 import { PostPublication } from "./PostPublication";
 import { FriendshipServiceType } from "../../../../application/FriendshipService";
 import { FriendshipRepositoryI } from "../../../../domain/Friendship/FriendshipRepository";
@@ -35,6 +35,8 @@ const PlayerProfile = observer(({ route }: PlayerProfileProps) => {
     const [following, setFollowing] = useState<Boolean>(false);
     const [followers, setFollowers] = useState<Friendship[]>([]);
     const [followings, setFollowings] = useState<Friendship[]>([]);
+    const { theme } = useTheme();
+    const navigation = useNavigation();
 
     useEffect(() => {
         getProfile();
@@ -59,7 +61,14 @@ const PlayerProfile = observer(({ route }: PlayerProfileProps) => {
         };
 
         service
-            .find(repository, playerId, ["username", "position", "bio", "avatar_url", "full_name"])
+            .find(repository, playerId, [
+                "id",
+                "username",
+                "position",
+                "bio",
+                "avatar_url",
+                "full_name",
+            ])
             .then(({ code, message, data }) => {
                 if (code !== 200) {
                     uiStore.notification.addNotification(t(message));
@@ -147,6 +156,11 @@ const PlayerProfile = observer(({ route }: PlayerProfileProps) => {
         }
     };
 
+    const handleGoToChat = () => {
+        //@ts-ignore
+        navigation.navigate("Chat", { player });
+    };
+
     return (
         <View style={{ height: "100%" }}>
             <HeaderImage avatarUrl={player?.avatar_url} />
@@ -155,7 +169,7 @@ const PlayerProfile = observer(({ route }: PlayerProfileProps) => {
                     <Avatar
                         rounded
                         title={getAvatarName(player?.username || "")}
-                        size={120}
+                        size={60}
                         source={
                             player?.avatar_url && {
                                 uri: player?.avatar_url,
@@ -168,9 +182,18 @@ const PlayerProfile = observer(({ route }: PlayerProfileProps) => {
                             <Text h4>{player?.full_name}</Text>
                             <Text style={styles.username}>{player?.username}</Text>
                         </View>
-                        <Button onPress={handleFollowButton}>
-                            {t(following ? "following" : "follow")}
-                        </Button>
+                        <View style={styles.actionButtonsContainer}>
+                            <Button onPress={handleGoToChat} size='sm' radius='xl'>
+                                <Icon
+                                    type='ionicon'
+                                    name='chatbubble-outline'
+                                    color={theme.colors.white}
+                                />
+                            </Button>
+                            <Button onPress={handleFollowButton}>
+                                {t(following ? "following" : "follow")}
+                            </Button>
+                        </View>
                     </View>
                 </View>
                 <View style={styles.bioContainer}>
@@ -205,12 +228,12 @@ export default PlayerProfile;
 
 const useStyles = makeStyles((theme) => ({
     avatarImage: {
-        height: 120,
-        width: 120,
+        height: 60,
+        width: 60,
         objectFit: "cover",
     },
     avatarContainer: {
-        marginTop: -40,
+        marginTop: -30,
         borderRadius: 60,
         backgroundColor: theme.colors.secondary,
     },
@@ -249,6 +272,12 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        width: "66%",
+        width: "85%",
+    },
+    actionButtonsContainer: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "42%",
     },
 }));

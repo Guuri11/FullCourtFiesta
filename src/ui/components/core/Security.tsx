@@ -2,15 +2,18 @@ import React, { useCallback, useEffect, useState } from "react";
 import Navigation from "../router/Navigation";
 import LoadingPage from "../design/common/Loading";
 import { getData } from "../../hooks/useAsyncStorage";
-import { useAuthenticationStore, useAuthorizationStore } from "../../hooks/store";
+import { useAppStore, useAuthenticationStore, useAuthorizationStore } from "../../hooks/store";
 import { supabase } from "../../../infrastructure/persistance/supabase";
 import { log } from "../../../infrastructure/config/logger";
 import { DatabaseConnection } from "../../../infrastructure/config/db-connection";
+import { PlayerServiceType } from "../../../application/PlayerService";
+import { PlayerRepositoryI } from "../../../domain/Player/PlayerRepository";
 
 const Security = () => {
     const authorizationStore = useAuthorizationStore();
     const authenticationStore = useAuthenticationStore();
     const [loading, setLoading] = useState(true);
+    const appStore = useAppStore();
 
     const showOnboardingHandler = useCallback(() => {
         getData("showOnboarding").then((value) => {
@@ -30,9 +33,24 @@ const Security = () => {
         supabase.auth.onAuthStateChange((event, session) => {
             log.info("The session has been updated: " + event);
             authenticationStore.setSession(session);
+            if (session) {
+                getProfile();
+            }
         });
     }, [authorizationStore.showOnboarding]);
 
+    const getProfile = useCallback(async () => {
+        const { service, repository } = appStore.getService("player") as {
+            service: PlayerServiceType;
+            repository: PlayerRepositoryI;
+        };
+
+        service.getProfile(repository, authenticationStore.session).then(({ code, data }) => {
+            if (code === 200) {
+                authenticationStore.setUser(data);
+            }
+        });
+    }, []);
     useEffect(() => {
         showOnboardingHandler();
         handleSession();

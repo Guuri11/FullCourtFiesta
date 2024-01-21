@@ -72,7 +72,7 @@ const findByPlayerIdAndFollowerId = async (
         return false;
     }
     log.info(`User is following 👥 => ${JSON.stringify(count)}`);
-    return count;
+    return count > 0;
 };
 
 export const FriendshipRepository: FriendshipRepositoryI = {

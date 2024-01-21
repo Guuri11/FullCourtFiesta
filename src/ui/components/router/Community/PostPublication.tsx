@@ -9,7 +9,7 @@ import { useAuthenticationStore } from "../../../hooks/store";
 
 type PostPublicationType = {
     post: Post;
-    openBottomSheet: (post: Post) => void;
+    openBottomSheet?: (post: Post) => void;
 };
 // TODO: handle event dialog
 export const PostPublication = ({ post, openBottomSheet }: PostPublicationType) => {

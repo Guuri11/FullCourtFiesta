@@ -1,46 +1,30 @@
 import { action } from "mobx";
 
-import { Resetable } from "../interfaces/resetable";
-import UIStore from "./ui";
-import LocationStore from "./location";
-import AuthorizationStore from "./authorization";
-import AuthenticationStore from "./authentication";
-import {
-    AuthenticationService,
-    AuthenticationServiceType,
-} from "../../../application/AuthenticationService";
-import { AuthenticationRepositoryI } from "../../../domain/Authentication/AuthenticationRepository";
-import { AuthenticationRepository } from "../../../infrastructure/persistance/repositories/Authentication/AuthenticationRepository";
+import { AuthenticationService } from "../../../application/AuthenticationService";
+import { CourtService } from "../../../application/CourtService";
+import { FriendshipService } from "../../../application/FriendshipService";
+import { PlayerService } from "../../../application/PlayerService";
+import { PostService } from "../../../application/PostService";
 import * as types from "../../../application/types";
-import { PlayerService, PlayerServiceType } from "../../../application/PlayerService";
-import { PlayerRepository } from "../../../infrastructure/persistance/repositories/Player/PlayerRepository";
-import { PlayerRepositoryI } from "../../../domain/Player/PlayerRepository";
-import { PostService, PostServiceType } from "../../../application/PostService";
-import { PostRepository } from "../../../infrastructure/persistance/repositories/Post/PostRepository";
-import { PostRepositoryI } from "../../../domain/Post/PostRepository";
-import { FriendshipService, FriendshipServiceType } from "../../../application/FriendshipService";
-import { FriendshipRepository } from "../../../infrastructure/persistance/repositories/Friendship/FriendshipRepository";
-import { FriendshipRepositoryI } from "../../../domain/Friendship/FriendshipRepository";
-import { CourtService, CourtServiceType } from "../../../application/CourtService";
-import { CourtRepositoryI } from "../../../domain/Court/CourtRepository";
+import { AuthenticationRepository } from "../../../infrastructure/persistance/repositories/Authentication/AuthenticationRepository";
 import { CourtRepository } from "../../../infrastructure/persistance/repositories/Court/CourtRepository";
-import { CourtRepository as CourtRepositoryOpenStreetMap } from "../../../infrastructure/persistance/repositories/Court/CourtRepositoryOpenStreetMap";
 import { CourtRepository as CourtRepositoryLocal } from "../../../infrastructure/persistance/repositories/Court/CourtRepositoryLocal";
+import { CourtRepository as CourtRepositoryOpenStreetMap } from "../../../infrastructure/persistance/repositories/Court/CourtRepositoryOpenStreetMap";
+import { FriendshipRepository } from "../../../infrastructure/persistance/repositories/Friendship/FriendshipRepository";
+import { PlayerRepository } from "../../../infrastructure/persistance/repositories/Player/PlayerRepository";
+import { PostRepository } from "../../../infrastructure/persistance/repositories/Post/PostRepository";
+import { Resetable } from "../interfaces/resetable";
+import AuthenticationStore from "./authentication";
+import AuthorizationStore from "./authorization";
+import LocationStore from "./location";
+import UIStore from "./ui";
+import { MessageService } from "../../../application/MessageService";
+import { MessageRepository } from "../../../infrastructure/persistance/repositories/Chat/MessageRepository";
 
 type ServicesDIType = {
     name: types.ServiceNameType;
-    service:
-        | AuthenticationServiceType
-        | PlayerServiceType
-        | PostServiceType
-        | FriendshipServiceType
-        | CourtServiceType;
-    repository:
-        | AuthenticationRepositoryI
-        | PlayerRepositoryI
-        | PostRepositoryI
-        | FriendshipRepositoryI
-        | CourtRepositoryI;
+    service: types.ServiceType;
+    repository: types.RepositoryType;
 };
 
 class AppStore implements Resetable {
@@ -90,6 +74,11 @@ class AppStore implements Resetable {
                 name: "court-local",
                 service: CourtService,
                 repository: CourtRepositoryLocal,
+            },
+            {
+                name: "message",
+                service: MessageService,
+                repository: MessageRepository,
             },
         ];
     }

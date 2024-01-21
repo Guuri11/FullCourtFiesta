@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Community from "./Community";
 import CreatePost from "./CreatePost";
 import PlayerProfile from "./PlayerProfile";
+import Chat from "./Chat";
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +21,7 @@ export default function CommunityStack() {
                 component={PlayerProfile}
                 options={{ headerShown: false }}
             />
+            <Stack.Screen name='Chat' component={Chat} />
         </Stack.Navigator>
     );
 }
