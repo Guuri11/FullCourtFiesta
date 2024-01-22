@@ -8,6 +8,9 @@ import { useAppStore, useAuthenticationStore, useUIStore } from "../../../hooks/
 import { PlayerServiceType } from "../../../../application/PlayerService";
 import { PlayerRepositoryI } from "../../../../domain/Player/PlayerRepository";
 import { PlayerSearchResult } from "./PlayerSearchResult";
+import { CourtServiceType } from "../../../../application/CourtService";
+import { CourtRepositoryI } from "../../../../domain/Court/CourtRepository";
+import { CourtSearchResult } from "./CourtSearchResult";
 
 const Search = () => {
     const [index, setIndex] = useState(0);
@@ -17,6 +20,7 @@ const Search = () => {
     const appStore = useAppStore();
     const uiStore = useUIStore();
     const [players, setPlayers] = useState([]);
+    const [courts, setCourts] = useState([]);
     const authenticationStore = useAuthenticationStore();
 
     const updateSearch = (text: string) => {
@@ -31,21 +35,42 @@ const Search = () => {
         if (search === "") {
             return;
         }
-        const { service, repository } = appStore.getService("player") as {
-            service: PlayerServiceType;
-            repository: PlayerRepositoryI;
-        };
 
-        service
-            .search(repository, search, authenticationStore.session.user.id)
-            .then(({ code, message, data }) => {
+        // Search for courts
+        if (index === 0) {
+            const { service, repository } = appStore.getService("court") as {
+                service: CourtServiceType;
+                repository: CourtRepositoryI;
+            };
+
+            service.search(repository, search).then(({ code, message, data }) => {
                 if (code !== 200) {
                     uiStore.notification.addNotification(t(message), "error");
-                    setPlayers([]);
+                    setCourts([]);
                 } else {
-                    setPlayers(data);
+                    setCourts(data);
                 }
             });
+        }
+
+        // Search for Player
+        if (index === 1) {
+            const { service, repository } = appStore.getService("player") as {
+                service: PlayerServiceType;
+                repository: PlayerRepositoryI;
+            };
+
+            service
+                .search(repository, search, authenticationStore.session.user.id)
+                .then(({ code, message, data }) => {
+                    if (code !== 200) {
+                        uiStore.notification.addNotification(t(message), "error");
+                        setPlayers([]);
+                    } else {
+                        setPlayers(data);
+                    }
+                });
+        }
     };
 
     return (
@@ -83,8 +108,8 @@ const Search = () => {
             <TabView value={index} onChange={updateTab} animationType='spring'>
                 <TabView.Item style={{ width: "100%" }}>
                     <FlatList
-                        data={players}
-                        renderItem={({ item }) => <PlayerSearchResult player={item} />}
+                        data={courts}
+                        renderItem={({ item }) => <CourtSearchResult court={item} />}
                         keyExtractor={(item) => String(item.id)}
                         // Performance settings
                         initialNumToRender={10} // Adjust based on your needs
