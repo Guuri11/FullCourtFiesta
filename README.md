@@ -2,6 +2,8 @@
 
 FullCourtFiesta is a React Native Expo application, serving as a basketball social network where users can connect, chat, create posts, and discover nearby basketball courts based on their location. It's a personal project in the MVP phase, built with a hexagonal architecture, providing flexibility to switch between backend frameworks—currently powered by Supabase with future plans to explore alternatives like Spring Boot.
 
+‼️👀 This is currently a MVP so a lot of futures are not mature enough or developed, I just focused on built the basics for the app so I can use it to focus on my backend projects
+
 ## Key Features 🌟
 
 - **Customized Profile:** Create your profile, add information about your basketball skills, and share your achievements.
