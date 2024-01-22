@@ -54,7 +54,70 @@ If you wish to switch the backend, follow these steps:
 
 Go to `src/infrastructure` folder and create the repository for that will connect with your specific backend. Then go to `src/ui/store/app/index.ts` and add the repository like others
 
-## Some Screenshots
+## Architecture Overview 🏛️
+
+The Hexagonal Architecture structured is inspired on this video from CodelyTV 
+https://www.youtube.com/watch?v=eNFAJbWCSww&t=203s&pp=ygUdaGV4YWdvbmFsIHR5cGVzY3JpcHQgY29kZWx5dHY%3D
+
+The FullCourtFiesta application follows a modular hexagonal architecture, emphasizing separation of concerns and flexibility. 
+The project structure is organized into the following main directories:
+
+- **assets:** Contains assets such as Lottie animations.
+
+- **src:**
+  - **application:** Business logic layer containing application services.
+  
+  - **domain:** Defines the core domain entities and aggregates:
+    - **Authentication**
+    - **Court**
+    - **Event**
+    - **Friendship**
+    - **Message**
+    - **Player**
+    - **Post**
+  
+  - **infrastructure:** Infrastructure and configuration details:
+    - **config:** Configuration settings for the application.
+    - **locales/resources:** Localization resources for multilingual support.
+    - **persistance/repositories:** Data repositories for different domain entities:
+      - **Authentication**
+      - **Court**
+      - **Chat**
+      - **Friendship**
+      - **Player**
+      - **Post**
+  
+  - **types:** Shared type definitions used across the application.
+  
+  - **ui:** User Interface components and layout-related modules:
+    - **components/core:** Core reusable UI components.
+    - **design/common:** Common design elements like Chat and Form components.
+    - **design/layout/Notifications:** Notification-related layout components.
+    - **router:** Navigation logic organized by application sections:
+      - **Authentication/OnBoarding**
+      - **Community**
+      - **Home**
+      - **Profile**
+      - **Search**
+  
+  - **constants:** Application-wide constants.
+  
+  - **context:** Context providers for state management.
+  
+  - **hooks/store:** Custom hooks for state management.
+  
+  - **stores:** Application state stores for various concerns:
+    - **app/authentication**
+    - **app/authorization**
+    - **app/location**
+    - **app/ui**
+    
+  - **interfaces:** Interfaces used throughout the application.
+
+This structure facilitates maintainability, testability, and future adaptability by separating concerns at both the domain and infrastructure levels.
+
+
+## Some Screenshots 📸
 
 <img src="https://github.com/Guuri11/FullCourtFiesta/assets/48799796/f26f8f56-a3cc-41c9-8c46-7c3d9d599206" alt="Screenshot 1" width="300" />
 <img src="https://github.com/Guuri11/FullCourtFiesta/assets/48799796/f05d8803-e46c-49b2-bb69-a2a0ac3c8db1" alt="Screenshot 2" width="300" />
