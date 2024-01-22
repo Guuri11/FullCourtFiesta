@@ -50,7 +50,7 @@ npx expo start
 
 If you wish to switch the backend, follow these steps:
 
-1. Go to `src/infrastructure` folder and create the repository for that will connect with your specific backend. Then go to `src/ui/store/app/index.ts` and add the repository like others
+Go to `src/infrastructure` folder and create the repository for that will connect with your specific backend. Then go to `src/ui/store/app/index.ts` and add the repository like others
 
 
 ## License 📝
